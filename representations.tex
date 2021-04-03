@@ -1,0 +1,263 @@
+\chapter{Representations}
+
+\section{Constructing representations}
+
+Let us construct irreducible representations of finite groups. 
+
+\begin{example}
+Let us construct the representation $\rho$ of $\Alt_4$ given by 
+\begin{equation*}
+  (12)(34)\mapsto\begin{pmatrix}
+    0 & 1 & -1\\
+    1 & 0 & -1\\
+    0 & 0 & -1
+  \end{pmatrix},
+  \quad
+  (123)\mapsto\begin{pmatrix}
+    0 & 0 & -1\\
+    0 & 1 & -1\\
+    1 & 0 & -1
+  \end{pmatrix}.
+\end{equation*}
+We use the function \lstinline{GroupHomomorphismByImages}. 
+\begin{lstlisting}
+gap> A4 := AlternatingGroup(4);;
+gap> a := [[0,1,-1],[1,0,-1],[0,0,-1]];;
+gap> b := [[0,0,-1],[0,1,-1],[1,0,-1]];;
+gap> rho := GroupHomomorphismByImages(A4,\
+> [ (1,2)(3,4), (1,2,3) ], [ a, b ]);;
+gap> IsGroupHomomorphism(rho);
+true
+\end{lstlisting}
+This is indeed a faithful representation of $\Alt_4$.
+\begin{lstlisting}
+gap> IsTrivial(Kernel(rho));
+true
+\end{lstlisting}
+Just to see how it works, let us compute $\rho_{(132)}$, the image of
+$(132)\in\Alt_4$ under $\rho$. We are working with $3\times 3$ matrices so it
+is better to use the function
+\lstinline{Display}.
+\begin{lstlisting}
+gap> Display(Image(rho, (1,3,2)));                                              
+[ [  -1,   0,   1 ],
+  [  -1,   1,   0 ],
+  [  -1,   0,   0 ] ]
+\end{lstlisting}
+Now we construct the character $\chi$ of $\rho$. We also check that $\rho$ is
+irreducible since 
+\[
+\langle\chi,\chi\rangle=\frac{1}{12}\sum_{x\in\Alt_4}\chi(x)\chi(x^{-1})=1.
+\]
+\begin{lstlisting}
+gap> chi := x->TraceMat(x^rho);;
+gap> 1/Order(A4)*Sum(List(A4, x->chi(x)*chi(x^(-1))));
+1
+\end{lstlisting}
+\end{example}
+
+\index{Brauer, R.}
+In~\cite[Problem 1]{MR0178056}, R. Brauer asked what algebras are group
+algebras.  This question might be impossible to answer. However, we can play
+with some particular examples.
+
+\begin{example}
+	Is $\C^5\times M_5(\C)$ a (complex) group algebra? The answer is no.  
+	To prove our claim, we can compute the degrees of the irreducible
+	characters using \lstinline{CharacterDegrees}. 
+	%This function returns the
+	%degrees of irreducible characters of a given group as a collected (and thus
+	%sorted) list. 
+%	For example: 
+%\begin{lstlisting}
+%gap> CharacterDegrees(CyclicGroup(4));
+%[ [ 1, 4 ] ]
+%\end{lstlisting}
+%Now to answer the question of Example~\ref{example:C5xM5} 
+We list the degrees
+of irreducible characters of groups of order $30$. We see that there are four
+groups of order $30$ and none of them has a group algebra isomorphic to
+$\C^5\times M_5(\C)$.
+\begin{lstlisting}
+gap> n := 30;;
+gap> for G in AllGroups(Size, n) do
+> Print(CharacterDegrees(G), "\n");
+> od;
+[ [ 1, 10 ], [ 2, 5 ] ]
+[ [ 1, 6 ], [ 2, 6 ] ]
+[ [ 1, 2 ], [ 2, 7 ] ]
+[ [ 1, 30 ] ]
+\end{lstlisting}
+In fact, this shows that the groups algebras of groups of order $30$
+are 
+\begin{align*}
+  &&\C^{10}\times M_2(\C)^5,
+  &&\C^{6}\times M_2(\C)^6,
+  &&\C^{2}\times M_2(\C)^7,
+  &&\C^{30}.
+\end{align*}
+\end{example}
+
+How can we construct irreducible representations of a given group? This can be
+done with the package \lstinline{Repsn}, written by Vahid Dabbaghian. 
+Now let us play with examples:
+
+\begin{example}
+Let us construct the irreducible representations of $\Sym_3$. 
+The irreducible characters of a finite group
+can be constructed with \lstinline{Irr}:
+\begin{lstlisting}
+gap> S3 := SymmetricGroup(3);;
+gap> irr := Irr(S3);
+[ Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 1, -1, 1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 2, 0, -1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 1, 1, 1 ] ) ]
+\end{lstlisting}
+To construct irreducible representations we need to load the package
+\lstinline{repsn}:
+\begin{lstlisting}
+gap> LoadPackage("repsn");
+\end{lstlisting}
+
+The package contains \lstinline{IrreducibleAffordingRepresentation}. This function produces 
+irreducible representations from irreducible characters. Since we are working with $\Sym_3$, we will only need
+to consider the character of degree two. We will produce 
+the faithful represention $\Sym_3\to\GL(2,\C)$ given by 
+\[
+	(123)\mapsto\begin{pmatrix}
+		\omega^2 & 0\\
+		0 & \omega
+	\end{pmatrix},
+	\quad
+	(12)\mapsto\begin{pmatrix}
+		0 & \omega \\
+		\omega^2 & 0
+	\end{pmatrix}.
+\]
+Here is the code:
+\begin{lstlisting}
+gap> f := IrreducibleAffordingRepresentation(irr[2]);
+[ (1,2,3), (1,2) ] -> [ [ [ E(3)^2, 0 ], [ 0, E(3) ] ], 
+  [ [ 0, E(3) ], [ E(3)^2, 0 ] ] ]
+gap> Image(f, (1,2,3));
+[ [ E(3)^2, 0 ], [ 0, E(3) ] ]
+gap> Display(Image(f, (1,2,3)));
+[ [  E(3)^2,       0 ],
+  [       0,    E(3) ] ]
+gap> Display(Image(f, (1,2)));
+[ [       0,    E(3) ],
+  [  E(3)^2,       0 ] ]
+\end{lstlisting}
+\end{example}
+
+\section{The McKay conjecture}
+
+\index{McKay, J.}
+\index{McKay conjecture}
+For a finite group $G$ and a prime $p$ such that $p$ divides $|G|$ one defines
+\[
+	\Irr_{p'}(G)=\{\chi\in\Irr(G):p\nmid\chi(1)\}.
+\]
+In 1970 J. McKay made the following amazing conjecture: if $P\in\Syl_p(G)$,
+then 
+  \[
+	|\Irr_{p'}(G)|=|\Irr_{p'}(N_G(P))|.
+  \]
+
+\begin{example}[Testing the McKay conjecture]
+It is believed that the McKay conjecture is true.  Let us check the conjecture
+in some small examples. We first write a function that checks the conjecture.
+
+\begin{lstlisting}
+gap> McKay := function(G, p)
+> local N, n, m;
+> N := Normalizer(G, SylowSubgroup(G, p));
+> n := Number(Irr(G), x->Degree(x) mod p <> 0);
+> m := Number(Irr(N), x->Degree(x) mod p <> 0);
+> if n = m then
+> return n;
+> else
+> return false;
+> fi;
+> end;
+function( G, p ) ... end
+\end{lstlisting}
+With this function is now easy to check the conjecture in several small
+examples. Let us check that the McKay conjecture is true for $\SL_2(3)$. This
+group has order $24$, so we need to check the conjecture for $2$ and $3$: 
+\begin{lstlisting}
+gap> McKay(SL(2,3), 2);
+4
+gap> McKay(SL(2,3), 3);
+6
+\end{lstlisting}
+\end{example}
+
+For $k\in\Z$ and a finite group $G$ let
+\[
+  M_k(G)=|\{\chi\in\Irr{p'}(G):\chi(1)\equiv\pm k\bmod p\}|.
+\]
+
+\index{Isaacs, M.}
+\index{Navarro, G.}
+The Isaacs--Navarro conjecture states that 
+\[
+    M_k(G)=M_k(N_G(P)).
+\]
+
+\begin{example}[Testing the Isaacs--Navarro conjecture]
+Here we have a function that checks the Isaacs--Navarro conjecture:
+\begin{lstlisting}
+gap> IsaacsNavarro := function(G, k, p)
+> local mG, mN, N;
+> N := Normalizer(G, SylowSubgroup(G, p));
+> mG := Number(Filtered(Irr(G), x->Degree(x)\
+> mod p <> 0), x->Degree(x) mod p in [-k,k] mod p);
+> mN := Number(Filtered(Irr(N), x->Degree(x)\
+> mod p <> 0), x->Degree(x) mod p in [-k,k] mod p);
+> if mG = mN then
+> return mG;
+> else
+> return false;
+> fi;
+> end;
+function( G, k, p ) ... end
+\end{lstlisting}
+
+Let us check that the Isaacs--Navarro conjecture is true for the group
+$\SL_2(3)$. We only need to check the conjecture for $k\in\{1,2\}$ and
+$p\in\{2,3\}$. 
+\begin{lstlisting}
+gap> IsaacsNavarro(SL(2,3), 1, 2);
+4
+gap> IsaacsNavarro(SL(2,3), 1, 3);
+6
+gap> IsaacsNavarro(SL(2,3), 2, 2);
+0
+gap> IsaacsNavarro(SL(2,3), 2, 3);
+6
+\end{lstlisting}
+\end{example}
+
+\section{Problems}
+
+\begin{prob}
+	\label{prob:groupalgebra}
+	Describe the groups algebras $\C[G]$ for $G$ a finite group of order $28$.
+\end{prob}
+
+\begin{prob}
+	Construct the irreducible representations of $\D_8$ and $\SL_2(3)$.
+\end{prob}
+
+\begin{prob}
+	Construct the irreducible representations of 
+	$\Alt_4$, $\Sym_4$ and $\Alt_5$.
+\end{prob}
+
+\begin{prob}
+	\label{prob:McKay:M11}
+	Verify the McKay conjecture for the Mathieu Group $M_{11}$.
+\end{prob}
+
+

@@ -1,0 +1,83 @@
+\chapter{Representation theory}
+
+Recall that a finite group $G$ is said to be \textbf{rational} if
+$\chi(G)\subseteq\Q$ for all $\chi\in\Irr(G)$. Let us search for examples of
+rational groups.
+
+\begin{example}
+ %96,128,72 
+\end{example}
+
+
+\begin{example}
+  % size 48
+\end{example}
+
+
+
+
+
+
+
+%\begin{example}
+%  Let us compute the character table of $\Alt_4$. The group $\Alt_4$ has four
+%  conjugacy classes, so we need four irreducible characters. In
+%  Example~\ref{example:A4deg3} we found an irreducible representation of degree
+%  three.
+%\end{example}
+
+
+%Let now $\D_{2n}=\langle r,s:r^n=s^2=1,srs=r^{-1}\rangle$ be the dihedral group
+%of order $2n$. It is known that the map
+%\[
+%  r\mapsto\begin{pmatrix}
+%    \xi & 0\\
+%    0 & \xi^{-1}
+%  \end{pmatrix},
+%  \quad
+%  s\mapsto\begin{pmatrix}
+%    0 & 1\\
+%    1 & 0
+%  \end{pmatrix},
+%\]
+%induces an irreducible representation if and only if $\xi\ne\xi^{-1}$. Let us check first that
+%one has a representation.
+
+%Let $G=\langle a,b:a^2=b^3=(ab)^3=1\rangle$. Let us first check that
+%the map given by
+%\begin{equation}
+%  \label{eq:A4to3x3}
+%    a\mapsto\begin{pmatrix}
+%    0 & 1 & -1\\
+%    1 & 0 & -1\\
+%    0 & 0 & -1
+%    \end{pmatrix},
+%    \quad
+%    b\mapsto\begin{pmatrix}
+%      0 & 0 & 1\\
+%      1 & 0 & 0\\
+%      0 & 1 & 0
+%    \end{pmatrix}.
+%  \end{equation}
+%can be extended to a group homomorphism $G\to\GL_2(\Q)$. For that purpose we
+%need to check that these matrices satisfy the relations on $a$ and $b$.
+%\begin{lstlisting}
+%gap> a := [[0,1,-1],[1,0,-1],[0,0,-1]];;
+%gap> b := [[0,0,1],[1,0,0],[0,1,0]];;
+%gap> IsIdentityMat(a^2);
+%true
+%gap> IsIdentityMat(b^3);
+%true
+%gap> IsIdentityMat((a*b)^3);
+%true
+%\end{lstlisting}
+%The map $a\mapsto (12)(34)$, $b\mapsto (243)$ extends to a group isomorphism
+%$G\to\Alt_4$. To construct the group homomorphism we use the function
+%\lstinline{GroupHomomorphismByImages}. We need to construct the group $G$ and
+%the group homomorphism given by~\eqref{eq:A4to3x3}.
+
+\section{problems}
+
+\begin{prob}
+  
+\end{prob}

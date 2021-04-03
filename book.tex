@@ -1,0 +1,143 @@
+%\documentclass[graybox,envcountchap,sectrefs]{svmono}
+\documentclass[graybox,envcountchap]{svmono}
+
+\usepackage{manfnt}
+\usepackage[bottom]{footmisc}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{mathtools}
+\usepackage{xcolor} 
+\usepackage{centernot}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{type1cm}         
+\usepackage{makeidx}        
+\usepackage{graphicx}        
+\usepackage{multicol} 
+\usepackage{hyperref} 
+\makeindex             
+
+\overfullrule=1mm
+
+\newcommand{\GAP}{\textsf{GAP}}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\T}{\mathbb{T}}
+\renewcommand{\D}{\mathbb{D}}
+\newcommand{\B}{\mathbb{B}}
+
+\newcommand{\NA}{\mathfrak{B}}
+
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cH}{\mathcal{H}}
+
+\newcommand{\ot}{\otimes}
+
+
+\newcommand{\Aff}{\mathrm{Aff}}
+\newcommand{\Rad}{\mathrm{rad}}
+\newcommand{\Inn}{\mathrm{Inn}}
+\newcommand{\Ext}{\mathrm{Ext}}
+\newcommand{\Img}{\mathrm{Img}}
+\newcommand{\Syl}{\mathrm{Syl}}
+\newcommand{\gr}{\operatorname{gr}}
+\newcommand{\id}{\operatorname{id}}
+\newcommand{\Aut}{\operatorname{Aut}}
+\newcommand{\End}{\operatorname{End}}
+\newcommand{\Irr}{\operatorname{Irr}}
+\newcommand{\GL}{\mathbf{GL}}
+\newcommand{\PGL}{\mathbf{PGL}}
+\newcommand{\PSL}{\mathbf{PSL}}
+\newcommand{\SL}{\mathbf{SL}}
+\newcommand{\Alt}{\mathbb{A}}
+\newcommand{\Sym}{\mathbb{S}}
+\newcommand{\lcm}{\mathrm{mcm}}
+
+\newcommand{\cs}{\operatorname{cs}}
+\newcommand{\cd}{\operatorname{cd}}
+
+
+\usepackage{etoolbox}
+
+% To remove Springer from the title page
+\makeatletter
+\patchcmd{\@maketitle}{{\Large Springer\par}}{}{}{}
+\makeatother
+
+% Comments
+\newcommand{\LV}[1]{\textcolor{red}{LV: #1}}
+\newcommand{\AG}[1]{\textcolor{blue}{AG: #1}}
+
+
+\begin{document}
+
+
+\lstset{language=GAP,
+  showstringspaces=false,
+  xleftmargin=0.0cm,
+  xrightmargin=0.0cm,
+  basicstyle=\small\ttfamily,
+  frame=single,
+  framerule=0pt,
+}
+
+\author{Leandro Vendramin}
+\title{Algebra with \GAP}
+\subtitle{-- Monograph --}
+\maketitle
+
+%\frontmatter
+
+%\include{dedic}
+%\include{foreword}
+\include{preface}
+%\include{acknow}
+
+\tableofcontents
+
+%\include{acronym}
+
+
+\mainmatter
+
+\part{Basic theory}
+
+\include{first}
+\include{groups}
+\include{representations}
+\include{advanced}
+%\include{chars}
+
+%\part{Projects}
+%
+%\include{radical}
+%\include{simple}
+%\include{algebras}
+%\include{nichols}
+%%\include{appendix}
+%
+\backmatter
+%\include{glossary}
+\include{solutions}
+%
+\bibliographystyle{abbrv}
+\bibliography{refs}
+%
+\printindex
+
+\end{document}
+
+
+
+
+

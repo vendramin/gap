@@ -1,0 +1,229 @@
+\chapter{Advanced group theory}
+\section{Conjugacy classes}
+
+For a finite group $G$, let $\cs(G)$ denote the set of sizes of the conjugacy
+classes of $G$. 
+
+\begin{example}
+  Let us write a function to compute $\cs$. With this function we show that
+  \[
+    \cs(\Sym_3)=\{1,2,3\},
+    \quad
+    \cs(\Alt_5)=\{1,12,15,20\},
+    \quad
+    \cs(\SL_2(3))=\{1,4,6\}.
+  \]
+  Here is the code:
+\begin{lstlisting}
+gap> cs := function(group)
+> return Set(List(ConjugacyClasses(group), Size));
+> end;
+function( group ) ... end
+gap> cs(SymmetricGroup(3));
+[ 1, 2, 3 ]
+gap> cs(AlternatingGroup(5));
+[ 1, 12, 15, 20 ]
+gap> cs(SL(2,3));
+[ 1, 4, 6 ]
+\end{lstlisting}
+\end{example}
+
+The following example is taken from~\cite[Theorem A]{MR3210919} and
+answers a question made by R. Brauer~\cite[Question 2(ii)]{MR2875589}.
+
+\begin{example}
+  \index{Navarro, G.}
+  G. Navarro proved that there exist finite groups $G$ and $H$ such that $G$ is
+  solvable, $H$ is not solvable and $\cs(G)=\cs(H)$.
+
+  To prove this, let $G=G_{240,13}\times G_{960,1019}$ and
+  $H=G_{960,239}\times G_{480,959}$.  Then $G$ is solvable and $H$ is not. Moreover, 
+  $\cs(G)=\cs(H)$, as the following code shows:
+\begin{lstlisting}
+gap> U := SmallGroup(960,2390);;
+gap> V := SmallGroup(480,959);;
+gap> L := SmallGroup(960,1019);;
+gap> K := SmallGroup(240,13);;
+gap> UxV := DirectProduct(U,V);;
+gap> KxL := DirectProduct(K,L);;
+gap> IsSolvable(UxV);
+false
+gap> IsSolvable(KxL);
+true
+\end{lstlisting}
+One could try to compute $\cs(U\times V)$ directly. However, this calculation
+seems to be hard. The trick is to use the fact that 
+$\cs(H)=\{uv:u\in\cs(U),v\in\cs(V)\}$. Here is the code:
+\begin{lstlisting}
+gap> cs(G)=Set(List(Cartesian(cs(U),cs(V)), x->x[1]*x[2]));
+true
+\end{lstlisting}
+\end{example}
+
+The following result was proved by G. Navarro in~\cite{MR3210919}. It answers 
+another question posed by R. Brauer~\cite[Question 4(ii)]{MR2875589}.
+
+\begin{example}
+  G. Navarro proved that there exist finite groups $G$ and $H$ such that $G$ is
+  nilpotent, $Z(H)=1$ and $\cs(G)=\cs(H)$.
+
+  The groups discovered by Navarro are $G=\D_8\times G_{243,26}$ and
+  $H=G_{486,36}$. Here is the code:
+\begin{lstlisting}
+gap> K := DihedralGroup(8);;
+gap> L := SmallGroup(243,26);;
+gap> H := SmallGroup(486,36);;
+gap> IsTrivial(Center(H));
+true
+gap> G := DirectProduct(K,L);;
+gap> cs(G)=cs(H);
+true
+gap> IsNilpotent(G);
+true
+\end{lstlisting}
+\end{example}
+	
+%\begin{conjecture}[Thompson]
+%  \index{Thompson, J.}
+%  If $G$ is a non-abelian finite simple group there is a conjugacy class $C$ in
+%  $G$ such that $G=CC$.
+%\end{conjecture}
+%
+%\begin{claim}
+%  Let $C$ be a conjugacy class of $G$. Then $G=CC$ if and only if $C$ is real and 
+%  \[
+%    \sum_{\chi\in\Irr(G)}\frac{|\chi(c)|^2\chi(g^{-1})}{\chi(1)}\ne0
+%  \]
+%  for all $c\in C$ and $g\in G$.
+%\end{claim}
+
+\textcolor{blue}{
+\GAP~contains several useful group databases. One of these databases is the}
+\verb+SmallGroups+ library we found in Section~\ref{SmallGroups} but this
+library is not the only one. It is also possible to work with transitive or
+primitive groups of small degree. Let us see some applications.
+
+\begin{example}
+\textcolor{blue}{
+Let us prove the following claim: There is no sharply $4$-transitive group of
+degree seven or nine, see~\cite[Exercise 1.18]{MR1721031}. We first create a
+list of all transitive groups of degrees seven and nine and we keep only those
+groups that are at least $4$-transitive:}
+\begin{lstlisting}
+gap> l := Filtered(AllTransitiveGroups(NrMovedPoints, [7,9]), \\
+> x->Transitivity(x)>3);                                
+[ A7, S7, A9, S9 ]
+\end{lstlisting}
+\textcolor{blue}{
+Finally, we check that none of these groups 
+are sharply $4$-transitive. For that purpose, we see that the action on tuples
+is never regular:}
+\begin{lstlisting}
+gap> true in List(l, x->IsRegular(x, \\ 
+> Arrangements([1..NrMovedPoints(x)], 4), OnTuples));
+false
+\end{lstlisting}
+\end{example}
+
+\textcolor{blue}{
+Now let us see some examples that use the primitive groups library:}
+
+\begin{example}
+\textcolor{blue}{
+Let us prove the following claim: Primitive groups of degree eight are
+double transitive. First we note that there are seven primitive groups of
+degree eight:}
+\begin{lstlisting}
+gap> l := AllPrimitiveGroups(NrMovedPoints, 8);
+[ AGL(1, 8), AGammaL(1, 8), ASL(3, 2), 
+  PSL(2, 7), PGL(2, 7), A(8), S(8) ]
+\end{lstlisting}
+\textcolor{blue}{
+To check that all these groups are indeed at least $2$-transitive, we use the
+function} \verb+Transitivity+:
+\begin{lstlisting}
+gap> List(l, Transitivity);
+[ 2, 2, 3, 2, 3, 6, 8 ]
+gap> ForAll(last, x->x>1);                 
+true
+\end{lstlisting}
+\end{example}
+	
+The {\it commuting probability} of a finite group $G$ is defined as the probability
+that a randomly chosen pair of elements of $G$ commute, and it is thus equal to
+$k(G)/|G|$. In Problem~\ref{prob:probability} we asked to write a function that
+computes the commuting probability of a finite group. 
+We first present a solution to this problem:
+
+\begin{lstlisting}
+gap> p := x->NrConjugacyClasses(x)/Order(x);
+function( x ) ... end
+\end{lstlisting}
+
+In 1970 J. C. Dixon observed that the commuting probability of a finite
+non-abelian simple group is $\leq 1/12$. This bound is attained for the
+alternating simple group $\Alt_5$:
+
+\begin{lstlisting}
+gap> p(AlternatingGroup(5));                
+1/12
+\end{lstlisting}
+
+
+
+One can find Dixon's proof in a 1973 volume of the \emph{Canadian Mathematical
+Bulletin}. The proof we present here is based on a proof due to Iv\'an Sadofschi
+Costa. We first assume that the commuting probability of $G$ is $>1/12$. Since
+$G$ is a non-abelian simple group, the identity is the only central element. 
+Let us assume first that there is a conjugacy class of $G$ of size $m$, where
+$m$ is such that $1<m\leq 12$. Then $G$ is a transitive subgroup of $\Sym_m$.
+For these groups the problem is easy: we show that there are no non-abelian simple groups
+that act transitively on sets of size $m\in\{2,\dots,12\}$ with commuting
+probability $>1/12$. To do this, we list these transitive groups and their commuting
+probabilities and verify that all commuting probabilities are $\leq
+1/12$:
+\begin{lstlisting}
+gap> l := AllTransitiveGroups(NrMovedPoints, [2..12], \\
+> IsAbelian, false, \\
+> IsSimple, true);;
+[ A5, L(6) = PSL(2,5) = A_5(6), A6, 
+  L(7) = L(3,2), A7, L(8)=PSL(2,7), A8, 
+  L(9)=PSL(2,8), A9, A_5(10), L(10)=PSL(2,9), 
+  A10, L(11)=PSL(2,11)(11), M(11), A11, A_5(12), 
+  L(2,11), M_11(12), M(12), A12 ]
+gap> List(l, p);           
+[ 1/12, 1/12, 7/360, 1/28, 1/280, 1/28, 1/1440, 
+  1/56, 1/10080, 1/12, 7/360, 1/75600, 2/165, 
+  1/792, 31/19958400, 1/12, 2/165, 1/792, 1/6336, 
+  43/239500800 ]
+gap> ForAny(l, x->p(x)>1/12);
+false
+\end{lstlisting}
+
+Now assume that all non-trivial conjugacy class of $G$ have at least 13 elements. 
+Then the class equation implies that
+\begin{align*}
+	|G|&\geq \frac{13}{12}|G|-12,
+	%&=\sum_{k\geq 1}k\times\text{number of conjugacy classes with $k$ elements}\\
+	%&\geq 1+13\sum_{k\geq 13}\text{number of conjugacy classes with $k$ elements}\\
+\end{align*}
+and therefore $|G|\leq 144$. Thus one needs to check what happens with groups
+of order $\leq 144$. 
+But we know that the only non-abelian simple group of size
+$\leq 144$ is the alternating simple group $\Alt_5$.
+\begin{lstlisting}
+gap> AllGroups(Size, [2..144], \\
+> IsAbelian, false, \\
+> IsSimple, true);
+[ Alt( [ 1 .. 5 ] ) ]
+\end{lstlisting}
+
+\section{Simple groups}
+
+What if we want to work with some simple groups? 
+
+
+
+\section{Problems}
+
+
