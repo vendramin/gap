@@ -239,6 +239,58 @@ gap> IsaacsNavarro(SL(2,3), 2, 3);
 \end{lstlisting}
 \end{example}
 
+In 1951 Ore conjectured that in each finite non-abelian simple group $G$ every element is a commutator. 
+The conjecture was proved by Liebeck, O'Brien, Shalev and Tiep in 2010. The following example
+proves 
+Ore's conjecture is true
+for sporadic simple groups. 
+
+\begin{example}[Ore's conjecture for sporadic simple groups]
+\index{Ore!conjecture}
+\index{Theorem!of Liebeck--O'Brien--Shalev--Tiep}
+A well-known result of Burnside states that 
+for a finite group $G$, an element $g\in G$ is a commutator if and only if 
+\[
+\sum_{\chi\in\Irr(G)}\frac{\chi(g)}{\chi(1)}\ne 0.
+\]
+
+We show a function that checks if in a given group 
+every element is a commutator. The input is the character table of the group and
+the function returns \lstinline{true} or \lstinline{false} depending whether 
+the group contains a commutator or not. 
+\begin{lstlisting}
+gap> Ore := function(char) 
+> local s,f,k;
+> for k in [1..NrConjugacyClasses(char)] do
+> s := 0;
+> for f in Irr(char) do
+> s := s+f[k]/Degree(f);  
+> od;
+> if s<=0 then
+> return false;
+> fi;
+> od;
+> return true;
+> end;
+function( char ) ... end
+\end{lstlisting}
+
+We use this function to verify Ore's conjecture for the five Mathieu groups:
+\begin{lstlisting}
+gap> Ore(CharacterTable("M11"));
+true
+gap> Ore(CharacterTable("M12"));
+true
+gap> Ore(CharacterTable("M22"));
+true
+gap> Ore(CharacterTable("M23"));
+true
+gap> Ore(CharacterTable("M24"));
+true
+\end{lstlisting}
+Similarly one verifies Ore's conjecture for all other sporadic simple groups. 
+\end{example}
+
 \section{Problems}
 
 \begin{prob}
@@ -260,4 +312,8 @@ gap> IsaacsNavarro(SL(2,3), 2, 3);
 	Verify the McKay conjecture for the Mathieu Group $M_{11}$.
 \end{prob}
 
+\begin{prob}
+	\label{prob:Ore}
+	Verify the Ore conjecture for all the sporadic simple groups. 
+\end{prob}
 
