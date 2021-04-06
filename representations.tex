@@ -254,10 +254,10 @@ for a finite group $G$, an element $g\in G$ is a commutator if and only if
 \sum_{\chi\in\Irr(G)}\frac{\chi(g)}{\chi(1)}\ne 0.
 \]
 
-We show a function that checks if in a given group 
-every element is a commutator. The input is the character table of the group and
-the function returns \lstinline{true} or \lstinline{false} depending whether 
-the group contains a commutator or not. 
+We show a function that checks wether every element of a given group is 
+is a commutator. The input is the character table of the group and
+the function returns \lstinline{true} if every element of the group is a commutator 
+or \lstinline{false} otherwise. 
 \begin{lstlisting}
 gap> Ore := function(char) 
 > local s,f,k;
