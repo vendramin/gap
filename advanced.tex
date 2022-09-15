@@ -287,14 +287,14 @@ We prove that the smallest finite perfect
 group that is not quasisimple 
 is a group of the form $C_2^4\rtimes\Alt_5$. 
 Recall that a group $G$ is said to be 
-quasisimple if $G$ is perfect and 
+\emph{quasisimple} if $G$ is perfect and 
 $G/Z(G)$ is (non-abelian) simple. The following function
 checks if a given group is quasisimple:
 \begin{lstlisting}
-gap> IsQuasiSimple := function(group)
-> return IsPerfectGroup(group) and IsSimple(group/Center(group));
+gap> IsQuasisimple := function(G)
+> return IsPerfectGroup(G) and IsSimple(G/Center(G));
 > end;
-function( group ) ... end
+function( G ) ... end
 \end{lstlisting}
 Note that we do not need to check that
 the quotient $G/Z(G)$ is non-abelian. 
@@ -306,7 +306,7 @@ and find the group needed:
 \begin{lstlisting}
 gap> for x in SizeNumbersPerfectGroups() do
 > G := PerfectGroup(x);
-> if not IsQuasiSimple(G) then
+> if not IsQuasisimple(G) then
 >   Display(x);
 >   break;
 > fi;
@@ -320,7 +320,7 @@ groups are not quasisimple:
 \begin{lstlisting}
 gap> NrPerfectGroups(960);
 2
-gap> IsQuasiSimple(PerfectGroup(960, 2));
+gap> IsQuasisimple(PerfectGroup(960, 2));
 false
 \end{lstlisting}
 \end{example}
@@ -329,19 +329,19 @@ false
 \label{ex:Blaucommutators}
 In \cite{MR1254833} H. Blau proved 
 proved that there exist (finitely many) quasisimple 
-groups that contain non-commutator central elements. The 
+groups that contain central elements that are non-commutators. The 
 smallest of such groups is 
 a Schur covering of $\Alt_6$.
 
 We first write an efficient function to compute
 the set of commutators of a given group:
 \begin{lstlisting}
-gap> SetOfCommutators := function(group)
+gap> SetOfCommutators := function(G)
 > local T;
-> T := Elements(RightTransversal(group, Center(group)));
-> return Set(List(Cartesian(T, T), x->Comm(x[1], x[2])));
+> T := Elements(RightTransversal(G, Center(G)));
+> return Set(Cartesian(T, T), x->Comm(x[1], x[2]));
 > end;
-function( group ) ... end
+function( G ) ... end
 \end{lstlisting}
 Note that this function is more efficient than 
 the one we presented in page \pageref{ex:commutatorElementsS16}. 
@@ -353,14 +353,14 @@ as permutation groups, as calculations will be much faster:
 gap> for x in SizeNumbersPerfectGroups() do
 > G := PerfectGroup(IsPermGroup, x);
 > dif := Difference(Center(G), SetOfCommutators(G));
-> if Size(dif)>0 then
+> if Size(dif) > 0 then
 >   Display(x);
 >   break;
 > fi;
 > od;
 [ 2160, 1 ]
 gap> A6 := AlternatingGroup(6);;
-gap> not IsomorphismGroups(SchurCover(A6), G)=fail;
+gap> not IsomorphismGroups(SchurCover(A6), G) = fail;
 true
 \end{lstlisting}
 \end{example}
@@ -414,155 +414,6 @@ true
 \end{lstlisting}
 \end{example}
 
-
-
-\begin{example}
-    It is well-known that the groups $\D_{8}$ and $Q_8$ 
-    are non-isomorphic and yet have the same character table. 
-    This can be easily seen as follows:
-\begin{lstlisting}
-gap> D8 := DihedralGroup(8);;
-gap> ct_D8 := CharacterTable(D8);;
-gap> Display(ct_D8);
-CT1
-
-     2  3  2  2  3  2
-
-       1a 2a 4a 2b 2c
-
-X.1     1  1  1  1  1
-X.2     1 -1  1  1 -1
-X.3     1  1 -1  1 -1
-X.4     1 -1 -1  1  1
-X.5     2  .  . -2  .
-gap> Q8 := QuaternionGroup(8);;
-gap> ct_Q8 := CharacterTable(Q8);;
-gap> Display(ct_Q8);
-CT2
-
-     2  3  2  2  3  2
-
-       1a 4a 4b 2a 4c
-    2P 1a 2a 2a 1a 2a
-    3P 1a 4a 4b 2a 4c
-
-X.1     1  1  1  1  1
-X.2     1 -1 -1  1  1
-X.3     1 -1  1  1 -1
-X.4     1  1 -1  1 -1
-X.5     2  .  . -2  .
-\end{lstlisting}
-We know that $\D_{8}$ and $Q_8$ are not isomorphic. This follows, for example, 
-from counting the number of elements of order two:
-\begin{lstlisting}
-gap> OrdersClassRepresentatives(ct_D8);
-[ 1, 2, 4, 2, 2 ]
-gap> OrdersClassRepresentatives(ct_Q8);
-[ 1, 4, 4, 2, 4 ]
-\end{lstlisting}
-With the function \lstinline{TransformingPermutations} 
-we verify that 
-the matrix of characters 
-are equivalent: 
-\begin{lstlisting}
-gap> Display(Irr(ct_D8));
-[ [   1,   1,   1,   1,   1 ],
-  [   1,  -1,   1,   1,  -1 ],
-  [   1,   1,  -1,   1,  -1 ],
-  [   1,  -1,  -1,   1,   1 ],
-  [   2,   0,   0,  -2,   0 ] ]
-gap> Display(Irr(ct_Q8));
-[ [   1,   1,   1,   1,   1 ],
-  [   1,  -1,  -1,   1,   1 ],
-  [   1,  -1,   1,   1,  -1 ],
-  [   1,   1,  -1,   1,  -1 ],
-  [   2,   0,   0,  -2,   0 ] ]
-gap> TransformingPermutations(Irr(ct_D8), Irr(ct_Q8));
-rec( columns := (), group := Group([ (3,5), (2,3) ])
-    , rows := (2,3,4) )
-\end{lstlisting}
-\end{example}
-
-In \cite{MR0178056} Brauer asked whether two non-isomorphic groups
-can have the same character table and the same power maps. The 
-first example goes back to E. Dade \cite{MR170957}:
-
-\begin{example}[Dade's solution to Brauer's problem]
-\index{Brauer's pairs}
-    Dade's paper shows the existence of two non-isomorphic groups
-    of order $p^7$, where $p\geq5$ is a prime number, 
-    with the same character table (up to permutation of rows and columns) 
-    and
-    the same power maps. The groups 
-    both have exponent $p$ (with this, we do not need to 
-    check the equality 
-    of power maps) 
-    and nilpotency class three. 
-    To check character tables up to permutations of rows and columns 
-    one uses the function \lstinline{TransformingPermutations}. However, 
-    as the use of this function is quite expensive 
-    in our groups, we try to 
-    find two non-isomorphic 
-    groups of order $5^7$ of nilpotency class three
-    and exponent five 
-    with exactly the same character table:
-\begin{lstlisting}
-gap> p := 5;;
-gap> m := 7;;
-gap> list :=  AllSmallGroups(Size, p^m, Exponent, \ 
-> p, NilpotencyClassOfGroup, 3);;
-> tables := List(list, CharacterTable);;
-> for c in Combinations([1..Size(list)], 2) do
->   x := tables[c[1]];
->   y := tables[c[2]];
->   if Irr(x) = Irr(y) then
->     Display(IdGroup(UnderlyingGroup(x)));
->     Display(IdGroup(UnderlyingGroup(y)));
->     break;
->   fi;
-> od;
-[ 78125, 19912 ]
-[ 78125, 19913 ]
-\end{lstlisting}
-\end{example}
-
-\begin{example}
-\index{Brauer's pairs}
-    In \cite{MR2256391} B. Eick and J. M\"uller 
-    mention that E. Skrzipczyk found pairs 
-    of non-isomorphic 
-    groups of order $2^8$ 
-    with the same character table and 
-    power maps. The following code
-    uses Skrzipczyk's ideas in the case of  
-    groups of order $3^6$:
-\begin{lstlisting}
-gap> p := 3;
-gap> m := 6;
-gap> list := AllSmallGroups(Size, p^m, Exponent, p^2);;
-gap> tables := List(list, CharacterTable);;
-gap> for c in Combinations([1..Size(list)], 2) do
-> x := tables[c[1]];
-> y := tables[c[2]];
-> if not NrConjugacyClasses(x) = NrConjugacyClasses(y) then
->   continue;
-> fi;
-> if not Set(CharacterDegrees(x))=Set(CharacterDegrees(y)) then
->   continue;
-> fi;
-> m_y := Irr(y);
-> PowerMap(y, p^m);
-> if not \ 
-> TransformingPermutationsCharacterTables(x, y) = fail then
->   Display([IdGroup(UnderlyingGroup(x)), \ 
->   IdGroup(UnderlyingGroup(y))]);
->   break;
-> fi;
-> od;
-[ [  729,   44 ],
-  [  729,   45 ] ]
-\end{lstlisting}
-\end{example}
 
 The \emph{commuting probability} of a finite group $G$ is defined as the probability
 that a randomly chosen pair of elements of $G$ commute, and it is thus equal to
@@ -776,15 +627,17 @@ from the structure of Hall's subgroups:
 \begin{lstlisting}
 gap> HallSubgroup(G, [2, 3]);
 fail
-ap> StructureDescription(HallSubgroup(A8, [2, 3]));
+gap> StructureDescription(HallSubgroup(A8, [2, 3]));
 "(C2 x C2 x C2 x C2) : (S3 x S3)"
 \end{lstlisting}
 \end{example}
 
 \section{Representations}
 
-We now describe how to work with 
-group representations and character tables. 
+%We can construct representations of finite groups. 
+%There are different ways of doing this.
+In \GAP~ we have different ways of constructing representations of finite groups.
+Let us start with some examples. 
 
 \begin{example}
 Let us construct the representation $\rho$ of $\Alt_4$ given by 
@@ -829,7 +682,7 @@ gap> Display(Image(rho, (1,3,2)));
 Now we construct the character $\chi$ of $\rho$. We also check that $\rho$ is
 irreducible since 
 \[
-\langle\chi,\chi\rangle=\frac{1}{12}\sum_{x\in\Alt_4}\chi(x)\chi(x^{-1})=1.
+\langle\chi,\chi\rangle=\frac{1}{|\Alt_4|}\sum_{x\in\Alt_4}\chi(x)\chi(x^{-1})=1.
 \]
 \begin{lstlisting}
 gap> chi := x->TraceMat(x^rho);;
@@ -838,91 +691,9 @@ gap> 1/Order(A4)*Sum(List(A4, x->chi(x)*chi(x^(-1))));
 \end{lstlisting}
 \end{example}
 
-\index{Brauer, R.}
-In~\cite[Problem 1]{MR0178056}, R. Brauer asked what algebras are group
-algebras.  This question might be impossible to answer. However, we can play
-with some particular examples.
-
-\begin{example}
-	Is $\C\times M_2(\C)\times M_{5}(\C)$ a (complex) group algebra? The answer is no.  
-    By Wedderburn's theorem, if $\C\times M_2(\C)\times M_{5}(\C)$ is the group algebra of some group $G$, then
-	$G$ has order 30 with three 
-	irreducible characters of 
-	degrees one, two and five, respectively. We will
-	prove that there are no such groups.  
-	
-We list the degrees
-of irreducible characters of groups of order $30$. We see that there are four
-groups of order $30$ and none of them has exactly three 
-irreducible characters: 
-\begin{lstlisting}
-gap> n := 30;;
-gap> for G in AllGroups(Size, n) do
-> Display(Size(Irr(G)));
-> od;
-15
-12
-9
-30
-\end{lstlisting}
-We now compute the degrees of the irreducible characters
-of groups of order 30:
-\begin{lstlisting}
-gap> for G in AllGroups(Size, n) do
-> Print(CharacterDegrees(G), "\n");
-> od;
-[ [ 1, 10 ], [ 2, 5 ] ]
-[ [ 1, 6 ], [ 2, 6 ] ]
-[ [ 1, 2 ], [ 2, 7 ] ]
-[ [ 1, 30 ] ]
-\end{lstlisting}
-In fact, this shows that the groups algebras of groups of order $30$
-are 
-\begin{align*}
-  &&\C^{10}\times M_2(\C)^5,
-  &&\C^{6}\times M_2(\C)^6,
-  &&\C^{2}\times M_2(\C)^7,
-  &&\C^{30}.
-\end{align*}
-\end{example}
-
-\begin{example}
-    \label{exa:degreesJ1}
-    The package \lstinline{CTblLib}, written by T. Breuer, 
-    contains character tables of some groups. The first
-    Janko group $\operatorname{J}_1$ is a simple group of 
-    order 175560. It has 
-    15 conjugacy classes (and hence 15
-    irreducible representations). 
-    We can get all this information only from the character table:
-\begin{lstlisting}
-gap> ct := CharacterTable("J1");;
-gap> Size(ct);
-175560
-gap> IsSimple(ct);
-true
-gap> NrConjugacyClasses(ct);
-15
-gap> Size(Irr(ct));
-15
-gap> LinearCharacters(ct);
-[ Character( CharacterTable( "J1" ),
-  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ) ]
-gap> CharacterDegrees(ct);
-[ [ 1, 1 ], [ 56, 2 ], [ 76, 2 ], [ 77, 3 ],
-  [ 120, 3 ], [ 133, 3 ], [ 209, 1 ] ]
-gap> SizesConjugacyClasses(ct);
-[ 1, 1463, 5852, 5852, 5852, 29260, 25080, 17556,
-  17556, 15960, 11704, 11704, 9240, 9240, 9240 ]
-gap> SizesCentralizers(ct);
-[ 175560, 120, 30, 30, 30, 6, 7, 10, 10, 11, 15, 15,
-  19, 19, 19 ]
-\end{lstlisting}
-\end{example}
-
-How can we construct irreducible representations of a given group? This can be
-done with the package \lstinline{Repsn}, written by V.  Dabbaghian. 
-Now let us play with examples:
+We now construct irreducible representations of a given group. 
+This can be done with the package \lstinline{Repsn}, 
+written by V.  Dabbaghian. 
 
 \begin{example}
 Let us construct the irreducible representations of $\Sym_3$. 
@@ -972,13 +743,108 @@ gap> Display(Image(f, (1,2)));
 \end{lstlisting}
 \end{example}
 
+
+\index{Brauer, R.}
+In~\cite[Problem 1]{MR0178056}, R. Brauer asked which algebras are group
+algebras. This question might be very hard to answer in a general situation.
+Here we play with some particular examples and combine algebra theorems with \GAP~to get an answer to this question.
+
+\begin{example}
+	Is $\C\times M_2(\C)\times M_{5}(\C)$ a (complex) group algebra? The answer is no.  
+    By Wedderburn's theorem, if $\C\times M_2(\C)\times M_{5}(\C)$ is the group algebra of some group $G$, then
+	$G$ has order 30 with three 
+	irreducible characters of 
+	degrees one, two and five, respectively. We will
+	prove that there are no such groups.  
+	
+We list the degrees
+of irreducible characters of groups of order $30$. We see that there are four
+groups of order $30$ and none of them has exactly three 
+irreducible characters: 
+\begin{lstlisting}
+gap> n := 30;;
+gap> for G in AllGroups(Size, n) do
+> Display(Size(Irr(G)));
+> od;
+15
+12
+9
+30
+\end{lstlisting}
+We now compute the degrees of the irreducible characters
+of groups of order 30:
+\begin{lstlisting}
+gap> for G in AllGroups(Size, n) do
+> Print(CharacterDegrees(G), "\n");
+> od;
+[ [ 1, 10 ], [ 2, 5 ] ]
+[ [ 1, 6 ], [ 2, 6 ] ]
+[ [ 1, 2 ], [ 2, 7 ] ]
+[ [ 1, 30 ] ]
+\end{lstlisting}
+In fact, this shows that the groups algebras of groups of order $30$
+are 
+\begin{align*}
+  &&\C^{10}\times M_2(\C)^5,
+  &&\C^{6}\times M_2(\C)^6,
+  &&\C^{2}\times M_2(\C)^7,
+  &&\C^{30}.
+\end{align*}
+\end{example}
+
+Remarkably,~\GAP~contains a large database 
+of representations and character tables. For example, it includes 
+all character tables of sporadic simple groups and several 
+of their matrix (over the rationals and finite fields) and permutation
+representations. 
+
+\begin{example}
+    \label{exa:degreesJ1}
+    The package \lstinline{CTblLib}, written by T. Breuer, 
+    contains character tables of some groups. The first
+    Janko group $\operatorname{J}_1$ is a simple group of 
+    order 175560. It has 
+    15 conjugacy classes (and hence 15
+    irreducible representations). 
+    We can get all this information only from the character table:
+\begin{lstlisting}
+gap> ct := CharacterTable("J1");;
+gap> Size(ct);
+175560
+gap> IsSimple(ct);
+true
+gap> NrConjugacyClasses(ct);
+15
+gap> Size(Irr(ct));
+15
+gap> LinearCharacters(ct);
+[ Character( CharacterTable( "J1" ),
+  [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ] ) ]
+gap> CharacterDegrees(ct);
+[ [ 1, 1 ], [ 56, 2 ], [ 76, 2 ], [ 77, 3 ],
+  [ 120, 3 ], [ 133, 3 ], [ 209, 1 ] ]
+gap> SizesConjugacyClasses(ct);
+[ 1, 1463, 5852, 5852, 5852, 29260, 25080, 17556,
+  17556, 15960, 11704, 11704, 9240, 9240, 9240 ]
+gap> SizesCentralizers(ct);
+[ 175560, 120, 30, 30, 30, 6, 7, 10, 10, 11, 15, 15,
+  19, 19, 19 ]
+\end{lstlisting}
+\end{example}
+
+
 For a finite group $G$ and a prime $p$ such that $p$ divides $|G|$ one defines
 \[
 	\Irr_{p'}(G)=\{\chi\in\Irr(G):p\nmid\chi(1)\}.
 \]
 
+The following conjecture was posed by J. McKay for simple 
+groups and $p=2$ in \cite{McKayNoticesAMS}, and
+it was later generalized by M. Isaacs \cite{MR332945}: 
+
 \begin{conjecture}[McKay]
 \index{McKay's conjecture}
+\label{conj:McKay}
 Let $G$ be a finite group. If $P\in\Syl_p(G)$,
 then 
   \[
@@ -986,7 +852,8 @@ then
   \]
 \end{conjecture}
 
-The conjecture is still open. 
+The conjecture is still open; we refer to 
+\cite{MR3753712} for the state-of-the-art. 
 
 \begin{example}[Testing McKay's conjecture]
 \label{exa:McKay}
@@ -1008,8 +875,8 @@ gap> McKay := function(G, p)
 function( G, p ) ... end
 \end{lstlisting}
 With this function is now easy to check the conjecture in several small
-examples. Let us check that the McKay conjecture is true for $\SL_2(3)$. This
-group has order 24, so we need to check the conjecture for 2 and 3: 
+examples. Let us verify that the McKay conjecture is true for $\SL_2(3)$. This
+group has order 24, so we need to check the conjecture holds for $p\in\{2,3\}$:
 \begin{lstlisting}
 gap> McKay(SL(2,3), 2);
 true
@@ -1021,21 +888,19 @@ The package \lstinline{CTblLib}
 contains character tables of some normalizers of Sylow subgroups
 of sporadic simple groups. 
 For example, to obtain the character table of the 
-normalizer of the Sylow 2-subgroup of $\operatorname{Th}$ 
+normalizer of the Sylow 2-subgroup of the Thompson sporadic group $\operatorname{Th}$ 
 we proceed as follows:
 \begin{lstlisting}
 gap> CharacterTable("ThN2");
 CharacterTable( "ThN2" ) 
 \end{lstlisting}
-However, not all character tables of normalizer
-subgroups are stored:
+However, not all character tables of normalizer of Sylow subgroups are stored:
 \begin{lstlisting}
 gap> CharacterTable("Co1N2");
 fail
 \end{lstlisting}
 
-With the database of normalizers of Sylow subgroups now 
-we can check 
+We can use this database of normalizers of Sylow subgroups to check 
 McKay's conjecture for some sporadic simple groups 
 more efficiently:
 \begin{lstlisting}
@@ -1057,7 +922,7 @@ gap> McKay := function(name)
 > end;
 function( name ) ... end
 \end{lstlisting}
-With this function we can verify the conjecture
+We use this function to verify the conjecture
 for several sporadic simple groups:
 \begin{lstlisting}
 gap> McKay("Fi23");
@@ -1073,24 +938,33 @@ group:
 gap> McKay("M");
 fail
 \end{lstlisting}
+We remark that in \cite{MR1643110}, R. Wilson proved that
+McKay's conjecture is true
+for the sporadic simple groups using a description of 
+the normalizers of their Sylow subgroups. 
 \end{example}
 
-For $k\in\Z$ and a finite group $G$ let
+In \cite{MR1935849}, M. Isaacs and G. Navarro 
+proposed a refinement of Conjecture \ref{conj:McKay}.
+For a prime number $p$, an integer $k\in\Z$ coprime with $p$, and a finite group $G$, let
 \[
   M_k(G)=|\{\chi\in\Irr_{p'}(G):\chi(1)\equiv\pm k\bmod p\}|.
 \]
 
+The following conjecture proposed by Isaacs and Navarro is still open and implies McKay's conjecture.
+
 \begin{conjecture}[Isaacs--Navarro]
 \index{Isaacs, M.}
 \index{Navarro, G.}
-Let $G$ be a finite group and $P$ be a Sylow subgroup
-of $G$. If $k\in\Z$, then 
+\index{Isaacs--Navarro's conjecture}
+Let $G$ be a finite group and $P$ be a Sylow $p$-subgroup
+of $G$. If $k\in\Z$ is coprime with $p$, then 
 \[
     M_k(G)=M_k(N_G(P)).
 \]
 \end{conjecture}
 
-The conjecture is still open. 
+Let us see some examples where we can test the Isaacs-Navarro conjecture.
 
 \begin{example}[Testing Isaacs--Navarro conjecture]
 \index{Isaacs--Navarro conjecture}
@@ -1104,7 +978,7 @@ gap> IsaacsNavarro := function(G, k, p)
 > mN := Number(Filtered(Irr(N), x->Degree(x)\
 > mod p <> 0), x->Degree(x) mod p in [-k,k] mod p);
 > if mG = mN then
->   return mG;
+>   return true;
 > else
 >   return false;
 > fi;
@@ -1117,18 +991,17 @@ $\SL_2(3)$. We only need to check the conjecture for $k\in\{1,2\}$ and
 $p\in\{2,3\}$. 
 \begin{lstlisting}
 gap> IsaacsNavarro(SL(2,3), 1, 2);
-4
+true
 gap> IsaacsNavarro(SL(2,3), 1, 3);
-6
-gap> IsaacsNavarro(SL(2,3), 2, 2);
-0
+true
 gap> IsaacsNavarro(SL(2,3), 2, 3);
-6
+true
 \end{lstlisting}
 \end{example}
 
-In 1951 Ore and independently Ito
-proved that every element of any alternating simple group is a commutator. Ore also mentioned that ``it is possible that a similar theorem holds for any simple group of finite order, but it seems that at present we do not have the necessary methods to investigate the question". 
+In 1951, Ore and, independently, Ito
+proved that every element of any alternating simple group is a commutator. Ore also mentioned that ``it is possible that a similar theorem holds for any simple group of finite order, but it seems that at present we do not have the necessary methods to investigate the question".
+This gave rise to the Ore conjecture.
 
 \begin{conjecture}[Ore]
 \index{Ore's conjecture}
@@ -1136,7 +1009,7 @@ proved that every element of any alternating simple group is a commutator. Ore a
 \end{conjecture}
 
 The conjecture is now a theorem thanks 
-to the work of M. Liebeck, E. O'Brien, A. Shalev and P. Tiep. 
+to the work of M. Liebeck, E. O'Brien, A. Shalev and P. Tiep \cite{MR2654085}.
 
 \begin{example}[Testing Ore's conjecture]
 \label{exa:Ore}
@@ -1157,11 +1030,11 @@ is a commutator. Our
 function needs the character table of a group and returns
 \lstinline{true} if every element of the group is a commutator and \lstinline{false} otherwise:
 \begin{lstlisting}
-gap> Ore := function(char)
+gap> Ore := function(ct)
 > local s,f,k;
-> for k in [1..NrConjugacyClasses(char)] do
+> for k in [1..NrConjugacyClasses(ct)] do
 >   s := 0;
->   for f in Irr(char) do
+>   for f in Irr(ct) do
 >     s := s+f[k]/Degree(f);
 >   od;
 >   if s<=0 then
@@ -1170,7 +1043,7 @@ gap> Ore := function(char)
 > od;
 > return true;
 > end;
-function( char ) ... end
+function( ct ) ... end
 \end{lstlisting}
 
 Now, for example,   
@@ -1216,7 +1089,7 @@ obtaining the database from the Internet.
 We compute the structure
 of the Sylow subgroups of the first Janko group $\operatorname{J}_1$. By default, 
 the package uses a permutation representation (inside $\Sym_{175560}$) 
-for the group $J_1$: 
+for the group $\operatorname{J}_1$: 
 \begin{lstlisting}
 gap> J1 := AtlasGroup("J1");
 <permutation group of size 175560 with 2 generators>
@@ -1238,7 +1111,7 @@ With the command
 \begin{lstlisting}
 gap> DisplayAtlasInfo("J1");
 \end{lstlisting}
-We see all the information available on the group
+we see all the information available on the group
 $\operatorname{J}_1$. In particular, 
 the package contains 91 (faithful) representations 
 for $\operatorname{J}_1$. The function
@@ -1311,6 +1184,160 @@ gap> Number(irr, x->Degree(x) mod 2 <> 0);
 \end{lstlisting}
 \end{example}
 
+In the following examples we play with non-isomorphic groups which have the same character tables.
+Recall that two finite groups are said to have the same character tables if their character tables differ from permutations of rows and columns.
+
+\begin{example}
+    It is well-known that the groups $\D_{8}$ and $Q_8$ 
+    are non-isomorphic and yet have the same character table. 
+    This can be easily seen as follows:
+\begin{lstlisting}
+gap> D8 := DihedralGroup(8);;
+gap> ct_D8 := CharacterTable(D8);;
+gap> Display(ct_D8);
+CT1
+
+     2  3  2  2  3  2
+
+       1a 2a 4a 2b 2c
+
+X.1     1  1  1  1  1
+X.2     1 -1  1  1 -1
+X.3     1  1 -1  1 -1
+X.4     1 -1 -1  1  1
+X.5     2  .  . -2  .
+gap> Q8 := QuaternionGroup(8);;
+gap> ct_Q8 := CharacterTable(Q8);;
+gap> Display(ct_Q8);
+CT2
+
+     2  3  2  2  3  2
+
+       1a 4a 4b 2a 4c
+    2P 1a 2a 2a 1a 2a
+    3P 1a 4a 4b 2a 4c
+
+X.1     1  1  1  1  1
+X.2     1 -1 -1  1  1
+X.3     1 -1  1  1 -1
+X.4     1  1 -1  1 -1
+X.5     2  .  . -2  .
+\end{lstlisting}
+It can proved that $\D_{8}$ and $Q_8$ are not isomorphic in many different ways.
+For example, this follows from counting the number of elements of order two:
+\begin{lstlisting}
+gap> OrdersClassRepresentatives(ct_D8);
+[ 1, 2, 4, 2, 2 ]
+gap> OrdersClassRepresentatives(ct_Q8);
+[ 1, 4, 4, 2, 4 ]
+\end{lstlisting}
+With the function \lstinline{TransformingPermutations} 
+we verify that 
+the matrix of characters 
+are equivalent: 
+\begin{lstlisting}
+gap> Display(Irr(ct_D8));
+[ [   1,   1,   1,   1,   1 ],
+  [   1,  -1,   1,   1,  -1 ],
+  [   1,   1,  -1,   1,  -1 ],
+  [   1,  -1,  -1,   1,   1 ],
+  [   2,   0,   0,  -2,   0 ] ]
+gap> Display(Irr(ct_Q8));
+[ [   1,   1,   1,   1,   1 ],
+  [   1,  -1,  -1,   1,   1 ],
+  [   1,  -1,   1,   1,  -1 ],
+  [   1,   1,  -1,   1,  -1 ],
+  [   2,   0,   0,  -2,   0 ] ]
+gap> TransformingPermutations(Irr(ct_D8), Irr(ct_Q8));
+rec( columns := (), group := Group([ (3,5), (2,3) ]),
+  rows := (2,3,4) )
+\end{lstlisting}
+\end{example}
+
+A \emph{Brauer pair} is a pair of non-isomorphic finite groups 
+with the same
+character tables and power maps (up to permutation); 
+we refer to \cite[Definition 2.6.1]{MR2680716} for a more precise definition. 
+The notion is based on a question posed by R. Brauer in 
+\cite{MR0178056}, where he asked whether such pairs exist. 
+The first example of a Brauer pair goes back to E. Dade \cite{MR170957}. 
+
+\begin{example}[Dade's solution to Brauer's problem]
+\index{Brauer's pairs}
+    Dade's paper shows the existence of Brauer pairs of groups 
+    of order $p^7$, for $p\geq5$ a prime number. 
+    These groups
+    have nilpotency class three 
+    and exponent $p$ (with this, the condition on  
+    power maps is automatically satisfied once we know the groups
+    have the same character table). 
+    
+    To check character tables up to permutations of rows and columns 
+    one uses the function \lstinline{TransformingPermutations}. However, 
+    as the use of this function is quite expensive 
+    in our groups, we will try to 
+    find two non-isomorphic 
+    groups of order $5^7$ of nilpotency class three
+    and exponent five 
+    with \emph{exactly} the same character table:
+\begin{lstlisting}
+gap> p := 5;;
+gap> m := 7;;
+gap> list :=  AllSmallGroups(Size, p^m, Exponent, \ 
+> p, NilpotencyClassOfGroup, 3);;
+> tables := List(list, CharacterTable);;
+> for c in Combinations([1..Size(list)], 2) do
+>   x := tables[c[1]];
+>   y := tables[c[2]];
+>   if Irr(x) = Irr(y) then
+>     Display(IdGroup(UnderlyingGroup(x)));
+>     Display(IdGroup(UnderlyingGroup(y)));
+>     break;
+>   fi;
+> od;
+[ 78125, 19912 ]
+[ 78125, 19913 ]
+\end{lstlisting}
+\end{example}
+
+\begin{example}
+\index{Brauer's pairs}
+    In \cite{MR2256391}, B. Eick and J. M\"uller 
+    mention that E. Skrzipczyk found pairs 
+    of non-isomorphic 
+    groups of order $2^8$ 
+    with the same character table and 
+    power maps. The following code
+    uses Skrzipczyk's ideas in the case of  
+    groups of order $3^6$:
+\begin{lstlisting}
+gap> p := 3;
+gap> m := 6;
+gap> list := AllSmallGroups(Size, p^m, Exponent, p^2);;
+gap> tables := List(list, CharacterTable);;
+gap> for c in Combinations([1..Size(list)], 2) do
+> x := tables[c[1]];
+> y := tables[c[2]];
+> if not NrConjugacyClasses(x) = NrConjugacyClasses(y) then
+>   continue;
+> fi;
+> if not Set(CharacterDegrees(x)) = Set(CharacterDegrees(y)) then
+>   continue;
+> fi;
+> m_y := Irr(y);
+> PowerMap(y, p^m);
+> if not \ 
+> TransformingPermutationsCharacterTables(x, y) = fail then
+>   Display([IdGroup(UnderlyingGroup(x)), \ 
+>   IdGroup(UnderlyingGroup(y))]);
+>   break;
+> fi;
+> od;
+[ [  729,   44 ],
+  [  729,   45 ] ]
+\end{lstlisting}
+\end{example}
+
 In \cite{MR783067} the authors list several conjectures
 on products of conjugacy classes in finite non-abelian simple groups. 
 
@@ -1319,7 +1346,7 @@ on products of conjugacy classes in finite non-abelian simple groups.
     Let $G$ be a finite non-abelian simple group. Then there
     exists a conjugacy class $C$ of $G$ such that 
     $C^2=G$, where 
-    $C^2=\{xy:x\in C,y\in C\}$. 
+    $C^2=\{xy:x,y\in C\}$. 
 \end{conjecture}
 
 The conjecture is still open.
@@ -1328,14 +1355,14 @@ The conjecture is still open.
     We first present a function that
     checks the conjecture in a very naive way:
 \begin{lstlisting}
-gap> Thompson := function(group)
-> local SquareSet;
+gap> Thompson := function(G)
+> local squareSet;
 > # Return the square of a set
-> SquareSet := function(s)
+> squareSet := function(s)
 >   return Set(Cartesian(s, s), x->x[1]*x[2]);
 > end;
 > return ForAny(ConjugacyClasses(G), \ 
-> x->Size(SquareSet(x)) = Order(G));
+> x->Size(squareSet(x)) = Order(G));
 > end
 function( G ) ... end
 \end{lstlisting}
@@ -1348,8 +1375,8 @@ true
 gap> Thompson(PSL(2,7));
 true
 \end{lstlisting}
-Note that Thompson's conjecture is about simple 
-groups: 
+On the other hand, Thompson's conjecture is about (non-abelian) simple 
+groups, and it may not hold for arbitrary groups: 
 \begin{lstlisting}
 gap> Thompson(SymmetricGroup(4));
 false
@@ -1381,24 +1408,23 @@ gap> List(cc, IsReal);
     The use of real conjugacy classes could make
     our previous function slightly better. However, 
     there is a much better approach that uses
-    character tables: 
+    character tables, as we explain below.
 
     In \cite{MR3289286} 
     Malle mentions a useful technique 
     to check Thompson's conjecture in sporadic simple groups: If $G$
     is a finite group and $C$ is a real class, then
-    $C^2=G$ if and only if
+    $C^2=G$ if and only if, for some fixed $x\in C$, we have that
     \[
         \sum_{\chi\in\Irr(G)}\frac{|\chi(x)|^2\chi(g)}{\chi(1)}\ne0,
     \]
-    for all $g\in G$ and where $x\in C$ is an arbitrary element, 
-    see \cite[Exercise 2.6.3]{MR2680716}. 
+    for all $g\in G$. 
+    See \cite[Exercise 2.6.3]{MR2680716}. 
     
     Real conjugacy classes 
     can be obtained from a character table
-    using the function \lstinline{RealClasses}:
+    using the function \lstinline{RealClasses} of the \lstinline{CTblLib} package:
 \begin{lstlisting}
-gap> LoadPackage("CTblLib");
 gap> t_A4 := CharacterTable("A4");;
 gap> NrConjugacyClasses(t_A4);
 4
@@ -1407,7 +1433,7 @@ gap> OrdersClassRepresentatives(t_A4);
 gap> RealClasses(t_A4);
 [ 1, 2 ]
 \end{lstlisting}
-    We now present another function that checks 
+    We now present another function that checks
     if Thompson's conjecture is true:
 \begin{lstlisting}
 gap> Thompson := function(t)
@@ -1433,7 +1459,9 @@ false
 \end{lstlisting}
 \end{example}
 
-\index{Arad--Herzog}
+During the study of Thompson's conjecture above and Szet's conjecture, in \cite{MR783067} Z. Arad and M. Herzog proposed the following conjecture, which is still open:
+
+\index{Arad--Herzog's conjecture}
 \begin{conjecture}[Arad--Herzog]
 \label{conj:AradHerzog}
 If $G$ is a non-abelian simple group, then 
@@ -1441,9 +1469,11 @@ the product of two non-trivial conjugacy classes of $G$
 is never a single conjugacy class. 
 \end{conjecture}
 
-The conjecture is still open. 
+We refer the reader to \cite{MR3003939} for more details on the state-of-the-art of this conjecture, which is still open.
 
-\begin{example}[Testing Arad--Herzog conjecture]
+In the spirit of the previous conjectures, we produce different functions to test the Arad--Herzog conjecture on some simple groups.
+
+\begin{example}[Testing Arad--Herzog's conjecture]
 \index{Arad--Herzog conjecture}
 We first write a naive function to test if the 
 conjecture is true or false:
@@ -1520,28 +1550,29 @@ true
 gap> AradHerzog(AtlasGroup("J1"));
 true
 \end{lstlisting}
-Finally, we present a different function to check if the conjecture is true by only
+Finally, we present a different function to check the conjecture by only
 using character tables. 
 The method is based on Lemma 2.2 of \cite{MR3003939}, which gives
 a sufficient condition to check whether the conjecture is true. 
 
 \begin{lstlisting}
-gap> AradHerzog := function(ct)
-> local c,k,t;
-> k := NrConjugacyClasses(ct);
+gap> AradHerzog := function(t)
+> local c,i,k;
+> k := NrConjugacyClasses(t);
 > # We only consider non-trivial conjugacy classes
-> c := Filtered([1..k], x->SizesConjugacyClasses(ct)[x] > 1);
-> for t in IteratorOfTuples(c, 3) do
->   if ForAll(Irr(ct), x->x[t[1]]*x[t[2]]=x[t[3]]*Degree(x)) then
+> c := Filtered([1..k], x->SizesConjugacyClasses(t)[x] > 1);
+> for i in IteratorOfTuples(c, 3) do
+>   if ForAll(Irr(t), x->x[i[1]]*x[i[2]]=x[i[3]]*Degree(x)) then
 >     return;
 >   fi;
 > od;
 > return true;
 >end;
+function( t ) ... end
 \end{lstlisting}
-The function returns \lstinline{true} if the conjecture holds. 
-If the function does not return \lstinline{true}, 
-one cannot conclude that the conjecture is false. 
+This function returns \lstinline{true} if the conjecture holds. 
+However, when the function does not return \lstinline{true}, 
+one cannot conclude a priori that the conjecture is false. 
 
 We prove the conjecture for some sporadic simple groups:
 \begin{lstlisting}
@@ -1562,19 +1593,19 @@ finite sporadic simple groups.
 
 \begin{example}
     Let $\operatorname{Th}$ be the Thompson sporadic simple group. 
-    Then 
+    Recall that its order is 
     \[
     |\operatorname{Th}|= 2^{15}\cdot 3^{10}\cdot 5^3\cdot 7^2\cdot 13\cdot 19\cdot 31.
     \]
     Using maximal subgroups 
-    we can easily describe 
-    the structure of the Sylow 5-subgroups: these 
-    groups are semidirect products  
+    we will easily describe 
+    the structure of the Sylow 5-subgroups: 
+    these are semidirect products  
     of the form $C_5^2\rtimes C_5$. 
     
-    First we get the
+    To this aim, we first get the
     generators of the 10th maximal subgroup of $\operatorname{Th}$
-    which has order 12000 and hence it contains 
+    which has order 12000 and hence it contains
     a Sylow 5-subgroup of $\operatorname{Th}$. 
     This maximal subgroup is represented using 
     $248\times248$ matrices over $\F_2$. As
@@ -1586,134 +1617,17 @@ finite sporadic simple groups.
 gap> gens := AtlasGenerators("Th", 1, 10).generators;
 [ <an immutable 248x248 matrix over GF2>,
   <an immutable 248x248 matrix over GF2> ]
-gap> M10 := Image(IsomorphismPermGroup(Group(gens)));;
-gap> Order(M10);
+gap> m10 := Image(IsomorphismPermGroup(Group(gens)));;
+gap> Order(m10);
 12000
-gap> StructureDescription(SylowSubgroup(M10, 5));
+gap> StructureDescription(SylowSubgroup(m10, 5));
 "(C5 x C5) : C5"
 \end{lstlisting}
 Can you try to compute the structure of the Sylow 5-subgroups
 doing the calculations directly in $\operatorname{Th}$?
 \end{example}
 
-\begin{example}
-    Let $G=\langle a,b,c\mid ab=ca,ac=ba,bc=ab\rangle$. We will
-    study the structure of $G$. 
-    We first construct $G$ and check 
-    that $G$ is non-abelian. We will 
-    do this 
-    using the functions 
-    \lstinline{AssignGeneratorVariables} and
-    \lstinline{ParseRelators}:
-\begin{lstlisting}
-gap> f := FreeGroup("x", "y", "z");;
-gap> AssignGeneratorVariables(f);;
-#I  Assigned the global variables [ x, y, z ]
-gap> G := f/ParseRelators(f, "xy=zx, xz=yx, yz=xy");
-<fp group on the generators [ x, y, z ]>
-gap> a := G.1;;
-gap> b := G.2;;
-gap> c := G.3;;
-gap> IsAbelian(G);
-false
-\end{lstlisting}
-    We note that 
-    $G$ is infinite, as $G/[G,G]\simeq\Z$:
-\begin{lstlisting}
-gap> Order(G);
-infinity
-gap> AbelianInvariants(G/DerivedSubgroup(G));
-[ 0 ]
-gap> StructureDescription(G/DerivedSubgroup(G));
-"Z"
-\end{lstlisting}
-Note that $a^2=b^2=c^2$ and 
-$Z(G)=\langle b^2\rangle\simeq\Z$ is a finite-index subgroup. In fact,
-$G/Z(G)\simeq\Sym_3$:
-\begin{lstlisting}
-gap> a^2=b^2 and b^2=c^2;
-true
-gap> Center(G);
-Group([ b^2 ])
-gap> Order(Center(G));
-infinity
-gap> Index(G,Center(G));
-6
-gap> StructureDescription(G/Center(G));
-"S3"
-\end{lstlisting}
-Note that the group homomorphism $a\mapsto (12)$, $b\mapsto (13)$ 
-and $c\mapsto (23)$ 
-has kernel $Z(G)$. 
-Since $Z(G)$ has finite index in $G$, it follows 
-that every conjugacy class of $G$ 
-is finite. For example:
-\begin{lstlisting}
-gap> Size(ConjugacyClass(G, a));
-3
-gap> Size(ConjugacyClass(G, a*b));
-2
-gap> Size(ConjugacyClass(G, a*b*a^5));
-3
-\end{lstlisting}
-Let $p\colon G\to C_2$ be the group homomorphism
-given by $a\mapsto (12)$, $b\mapsto (12)$, $c\mapsto (12)$. 
-Then $\ker p \simeq \Z \times C_3$: 
-\begin{lstlisting}
-gap> C2 := Group([(1,2)]);;
-gap> p := GroupHomomorphismByImages(G, C2, [a,b,c],\ 
-> [(1,2),(1,2),(1,2)]);;
-gap> IsInjective(p);
-false
-gap> IsSurjective(p);
-true
-gap> K := Kernel(p);;
-gap> IsAbelian(K);
-true
-gap> AbelianInvariants(K);
-[ 0, 3 ]
-\end{lstlisting}
-From this we will conclude that $[G,G] \simeq C_3$. On the one hand, 
-since $G$ is non-abelian, $[G,G]\ne\{1\}$.  
-Moreover, by a theorem of Schur \cite[Theorem 5.7]{MR2426855}, $[G,G]$ is finite, 
-as $Z(G)$ has finite index in $G$.
-On the other hand, since $G/\ker p\simeq C_2$ is abelian, 
-$[G,G]\subseteq \ker p$. The group $\ker p\simeq\Z\times C_3$ contains
-a unique non-trivial torsion subgroup. Hence 
-$[G,G]\simeq C_3$. 
-\end{example}
 
-\begin{example}
-\label{exa:Dietzmann}
-Let $G=\langle a,b,c,d \mid a^b=d,a^c=b,a^d=c,b^a=c\rangle$. 
-We will show that $\langle a^3\rangle$ is a central subgroup of $G$ 
-and that $G/\langle a^3\rangle\simeq\SL_2(3)$: 
-\begin{lstlisting}
-gap> f := FreeGroup("x","y","z","w");;
-gap> AssignGeneratorVariables(f);
-#I  Assigned the global variables [ x, y, z, w ]
-gap> G := f/ParseRelators(f, "x^y=w, x^z=y, x^w=z, y^x=z");;
-gap> StructureDescription(G/Center(G));
-"A4"
-gap> a := G.1;;
-gap> b := G.2;;
-gap> c := G.3;;
-gap> d := G.4;;
-gap> a^3=b^3 and b^3=c^3 and c^3=d^3;
-true
-gap> a^3 in Center(G);
-true
-gap> N := Subgroup(G, [a^3]);;
-gap> StructureDescription(G/N);
-"SL(2,3)"
-gap> Size(ConjugacyClass(G, a));
-4
-\end{lstlisting}
-The example is a particular case of a theorem of Dietzmann \cite[Theorem 5.10]{MR2426855}. This theorem states that
-if $G$ is a group and $X$ is a normal subset of $G$ such that 
-every element of $X$ has finite order, then the subgroup
-generated by $X$ is finite. 
-\end{example}
 
 \section{Kaplansky's unit conjecture}
 
@@ -2045,7 +1959,7 @@ Create functions to compute the following:
 \begin{enumerate}[label=(\alph*)]
     \item The set of subnormal subgroups of $G$.
     \item The set of perfect subgroups of $G$.
-    \item The set of quasisimple subgroups of $G$ (a group is quasisimple if it is perfect and the quotient by its center is non-abelian simple).
+    \item The set of quasisimple subgroups of $G$.
     \item The layer of $G$, that is, the subgroup generated by the subnormal quasisimple subgroups of $G$.
     \item The generalized Fitting subgroup of $G$, that is, the subgroup generated by the Fitting subgroup and the layer of $G$.
 \end{enumerate}
@@ -2060,12 +1974,12 @@ Create functions to compute the following:
     Determine all $\pi$-separable groups of order $<1586$.
 \end{prob}
 
-
 \begin{prob}
-    Prove that the smallest pair of non-isomorphic groups
-    with the same character table (up to equivalence)
-    and power maps 
-    has order $2^8$. 
+    Prove that the smallest Brauer pair 
+    corresponds to groups of order $2^8$. To speed up the calculations
+    one can use the following fact: If $(G,H)$ is a Brauer pair, then
+    $G/[G,G]\simeq H/[H,H]$ and $Z(G)\simeq Z(H)$. 
+    See \cite[Lemma 2.6.3]{MR2680716}. 
 \end{prob}
 
 \begin{prob}
