@@ -1,0 +1,66 @@
+* Agregar capítulo con (algunas?) soluciones!
+
+* SubgroupsOfIndexTwo belongs to Laguna package!
+
+* Ejercicios y problemas sobre órdenes: https://arxiv.org/pdf/1810.03786.pdf
+
+* Para chequear McKay hay casos donde no hay que chequear nada, ver Navarro.
+
+* coset
+gap> S3 := SymmetricGroup(3);;
+gap> H := Subgroup(S3, [(1,2)]);;
+gap> CosetDecomposition(S3, H);
+[ [ (), (1,2) ], [ (1,3), (1,2,3) ], [ (1,3,2), (2,3) ] ]
+y a derecha?
+y a izquierda?
+
+
+brauer pairs, Computational Aspects of RepresentationTheory of Finite Groups IIKlaus Lux and Herbert Pahlings
+B. Heinrich Matzat Gert-Martin GreuelGerhard Hiss (Eds.)Algorithmic Algebraand Number Theory
+
+* agregar ejemplo de la familia de algebras de clifford de dimension 4 y calcular radical, centro y otras yerbas
+
+* ShallowCopy en lista de listas, StructuralCopy en lista de listas
+
+* teoría de Hall
+* teoría de Sylow
+* Superresolubilidad, nilpotencia, resolubilidad
+* FC groups, ejemplos
+* Fourier?
+* Experimentos (paseos alteatorios)
+
+* paquete repsn para construir representaciones irreducibles
+Ejemplo:
+gap> LoadPackage("repsn");
+-------------------------------------------------------
+Repsn for Constructing Representations of Finite Groups
+                  Version 3.0.2                        
+                                                       
+                    Written by                         
+                 Vahid Dabbaghian                      
+-------------------------------------------------------
+true
+gap> gr := SymmetricGroup(3);;
+gap> CharacterTable(gr);
+CharacterTable( Sym( [ 1 .. 3 ] ) )
+gap> ct := CharacterTable(gr);
+CharacterTable( Sym( [ 1 .. 3 ] ) )
+gap> Irr(gr);
+[ Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 1, -1, 1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 2, 0, -1 ] ), 
+  Character( CharacterTable( Sym( [ 1 .. 3 ] ) ), [ 1, 1, 1 ] ) ]
+gap> IrreducibleAffordingRepresentation(last[2]);
+[ (1,2,3), (1,2) ] -> [ [ [ E(3)^2, 0 ], [ 0, E(3) ] ], 
+  [ [ 0, E(3) ], [ E(3)^2, 0 ] ] ]
+
+* Freegroups
+
+gap> f:=FreeGroup("a","b");
+<free group on the generators [ a, b ]>
+gap> AssignGeneratorVariables(f);
+#I  Assigned the global variables [ a, b ]
+gap> k:=Group(a^2,a*b);
+Group([ a^2, a*b ])
+gap> word:=a^-1*b;
+a^-1*b
+

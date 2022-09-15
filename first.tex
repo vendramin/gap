@@ -5,7 +5,7 @@
 \label{section:primeros_pasos}
 
 Immediately after running~\GAP~we will see some information related to the
-distribution we have installed.  This information includes software version
+distribution we have installed.  This information includes the software version
 number and the packages loaded in memory. 
 We will also see that~\GAP~is ready:
 \begin{lstlisting}
@@ -17,19 +17,8 @@ To close~\GAP~one uses \lstinline{quit}:
 gap> quit;
 \end{lstlisting}
 
-
-To compile a ~\GAP~ file from the terminal we simply write in a terminal
-\begin{lstlisting}
-..> gap myfile.g
-\end{lstlisting}
-Is we choose to limit the memmory used to run this file we write:
-\begin{lstlisting}
-..> gap -o????? myfile.g
-\end{lstlisting}
-
-
 Every command should end with the symbol \lstinline{;} (semicolon). The symbol
-\lstinline{;;} (double semicolon) also is used to end a command but it means
+\lstinline{;;} (double semicolon) is also used to end a command, but it means
 that no screen output will be produced. 
 
 \begin{lstlisting}
@@ -38,7 +27,7 @@ gap> 2+5;
 7
 \end{lstlisting}
 
-To see information related commands or functions, tutorials and manuals one
+To see information related commands or functions, tutorials and manuals, one
 uses the symbol \lstinline{?} (question mark). Here we have some examples:
 \begin{lstlisting}
 gap> ?tutorial
@@ -57,8 +46,8 @@ the following example shows:
 gap> # This is just a comment!
 \end{lstlisting}
 
-To make the command line more readable one could use
-the symbol \lstinline{\} (backslash):
+To make the command line more readable one could use the
+symbol \verb+\+ (backslash), as we see in the following example:
 \begin{lstlisting}
 gap> # Let us compute 1+2+3
 gap> 1\
@@ -67,9 +56,10 @@ gap> 1\
 6
 \end{lstlisting}
 
-The function \lstinline{LogTo} saves the subsequent interaction to be logged to
-a file. It means that everything you see on your terminal will also appear in
-this file. This is extremely useful.  When the function \lstinline{LogTo} is
+The function \lstinline{LogTo} saves the output
+in a given file. It means that everything you see on your terminal will also appear in
+this file. 
+When the function \lstinline{LogTo} is
 called with no parameters~\GAP~will stop writing a log file.
 \begin{lstlisting}
 gap> # Save the output to the file mylog
@@ -77,8 +67,6 @@ gap> LogTo("mylog");
 gap> # Stop saving the output
 gap> LogTo();
 \end{lstlisting}
-%FIXME
-%SizeScreen
 
 \lstinline{NamesUserGVars} returns the names 
 of the global variables created by the user. \lstinline{MemoryUsage} returns 
@@ -94,16 +82,28 @@ gap> MemoryUsage(p);
 8
 \end{lstlisting}
 
-\lstinline{SaveWorkspace} saves an image of the memory into a file.  Later one
-can recover this image by calling~\GAP~ as follows: 
+In UNIX-based operating system, 
+to run a~\GAP~script from the terminal we simply write
 \begin{lstlisting}
-gap -L <workspace>
+$ gap myfile.g
+\end{lstlisting}
+If we choose to limit the memory used, say for example to
+2GB, we call~\GAP~as follows:
+\begin{lstlisting}
+$ gap -o 2G myfile.g
+\end{lstlisting}
+
+
+\lstinline{SaveWorkspace} saves an image of the memory into a file.  Later one
+can recover this image by calling~\GAP~as follows: 
+\begin{lstlisting}
+$ gap -L <workspace>
 \end{lstlisting}
 
 %The function \lstinline{PageSource} will show us the code 
 %more memory!
 
-\section{Basic arithmetics}
+\section{Basic arithmetic}
 
 One can do basic arithmetic operations with rational numbers:
 \begin{lstlisting}
@@ -126,17 +126,17 @@ gap> NumeratorRat(3/5);
 gap> DenominatorRat(3/5);
 5
 \end{lstlisting}
-One uses \lstinline{mod} to obtain the remainder after division of $a$ by $m$,
-where $a$ is the dividend and $m$ is the divisor.  Examples: 
+One uses \lstinline{a mod m} to obtain the remainder modulo
+$m$ of $a$: 
 \begin{lstlisting}
 gap> 6 mod 4;
 2
 gap> -6 mod 5;
 4
 \end{lstlisting}
-There are several functions that one can use for specific purposes. For example 
+There are several built-in functions that one can use for specific purposes. For example 
 \lstinline{Factors} returns the factorization of an integer and 
-\lstinline{IsPrime} detects whether an integer is prime or not.
+\lstinline{IsPrime} detects whether an integer is prime or not:
 \begin{lstlisting}
 gap> Factors(10);
 [ 2, 5 ]
@@ -151,10 +151,17 @@ gap> Factors(37);
 gap> IsPrime(37);
 true
 \end{lstlisting}
+
+To obtain more information about
+integers in~\GAP~one can check the documentation:
+\begin{lstlisting}
+gap> ?Integers
+\end{lstlisting}
+
 Other useful functions: \lstinline{Sqrt} computes square roots, 
 \lstinline{Factorial} computes the factorial of a positive integer, 
 \lstinline{Gcd} computes the greatest common divisor of a finite list of integers, 
-\lstinline{Lcm} computes the least commom multiple. 
+\lstinline{Lcm} computes the least common multiple: 
 \begin{lstlisting}
 gap> Sqrt(25);
 5
@@ -166,42 +173,25 @@ gap> Lcm(10,4,2,6);
 60
 \end{lstlisting}
 
-We can also work in cyclotomic fields.  \lstinline{CF} creates a cyclotomic
-field. To create primitive roots of $1$ one uses the function \lstinline{E}.
-More precisely: \lstinline{E(n)} returns $e^{2\pi i/n}$. Tipically, cyclotomic
-numbers will be represented as rational linear combinations of primitive roots
-of $1$. Examples:
-\begin{lstlisting}
-gap> E(6) in Rationals;
-false 
-gap> E(6) in Cyclotomics;
-true
-gap> E(3) in CF(3);
-true
-gap> E(3) in CF(4);
-false
-gap> E(3)^2+E(3);
--1
-gap> E(5)^5-E(5);
--2*E(5)-E(5)^2-E(5)^3-E(5)^4
-gap> E(6);
--E(3)^2
-\end{lstlisting}
-\lstinline{Inverse} (resp. \lstinline{AdditiveInverse}) returns 
-the multiplicative (resp. additive) inverse of an element. 
+\begin{remark}
+What happens if one tries
+to compute \lstinline{Sqrt(7)}? We will get
+a result, but it will not 
+be a rational number. 
+See \S\ref{section:cyclotomics} for more details.
+\end{remark}
+
+The function \lstinline{Inverse} (resp. \lstinline{AdditiveInverse}) returns 
+the multiplicative (resp. additive) inverse of an element:
 \begin{lstlisting}
 gap> AdditiveInverse(2/3);
 -2/3
 gap> Inverse(2/3);
 3/2
-gap> AdditiveInverse(E(7));
--E(7)
-gap> Inverse(E(7));
-E(7)^6
 \end{lstlisting}
 
-\GAP~can work with very large numbers. 
-Let us see some nice examples:
+In~\GAP~we can handle very large numbers. 
+Let us see some examples.
 
 \begin{example}
 	One can easily prove that $n=164$ is the largest integer such that $7^n$
@@ -241,89 +231,14 @@ gap> Sum(ListOfDigits(3^1000)) mod 7;
 \end{example}
 
 
-\subsection*{Finite fields}
-To create the finite field of $p^n$
-elements (here $p$ is a prime number) we use the function \lstinline{GF}.  The
-characteristic of a field can be obtained with \lstinline{Characteristic}. 
-\begin{lstlisting}
-gap> GF(2);                                                           
-GF(2)
-gap> GF(4);
-GF(2^2)
-gap> GF(9);
-GF(3^2)
-gap> Characteristic(Rationals);
-0
-gap> Characteristic(CF(3));
-0
-gap> Characteristic(CF(4));
-0
-gap> Characteristic(GF(2));
-2
-gap> Characteristic(GF(9));
-3
-\end{lstlisting}
-
-Let $p$ be a prime number and let $F$ denote the field with $q\coloneqq p^n$ elements, for some $n\in\N$. 
-The subset 
-\[
-  \{x\in F:x\ne 0\}
-\]
-is a cyclic group of size $q-1$; say generated by $\zeta$. Then
-$F=\{0,\zeta,\zeta^2,\dots,\zeta^{q-1}\}$, so each non-zero element of $F$ is
-then a power of $\zeta$.  
-
-In~\GAP~each non-zero element of the finite field
-\lstinline{GF(q)} will be a power of the generator \lstinline{Z(q)}. The zero
-of \lstinline{GF(q)} will be \lstinline{0*Z(q)} or equivalently
-\lstinline{Zero(GF(q))}. \lstinline{One(GF(q))} will be the multiplicative
-neutral element of \lstinline{GF(q)}. 
-\begin{lstlisting}
-gap> Size(GF(4));
-4
-gap> Elements(GF(4));
-[ 0*Z(2), Z(2)^0, Z(2^2), Z(2^2)^2 ]
-gap> Z(4);
-Z(2^2)
-gap> Inverse(Z(4));
-Z(2^2)^2
-gap> Zero(GF(4));
-0*Z(2)
-gap> 0 in GF(4);
-false
-gap> Zero(Rationals);
-0
-gap> One(GF(4));
-Z(2)^0
-gap> 1 in GF(4);
-false
-gap> One(Rationals);
-1
-\end{lstlisting}
-
-To recognize elements in finite fields with a prime number of elements one uses
-the function \lstinline{Int}. Examples:
-\begin{lstlisting}
-gap> Elements(GF(5));
-[ 0*Z(5), Z(5)^0, Z(5), Z(5)^2, Z(5)^3 ]
-gap> Int(Z(5)^0);
-1
-gap> Int(Z(5)^1);
-2
-gap> Int(Z(5)^2);
-4
-gap> Int(Z(5)^3);
-3
-\end{lstlisting}
-
 \section{Basic programming}
 \label{programming}
 
-\subsection*{Objects and variables}
+\subsection{Objects and variables}
 
 An object is something that we can assign to a variable. So an object could be
-either a number, a string, a group, a field, an element of a group, a group
-homomorphism, a ring, a matrix, a vector space... To assign an object to a
+either a number, a function, a string, a group, a field, an element of a group, a group
+homomorphism, a ring, a matrix, or a vector space. To assign an object to a
 variable one uses the operator \lstinline{:=} as the following example shows:
 \begin{lstlisting}
 gap> p := 32;;
@@ -344,24 +259,45 @@ false
 \end{remark}
 
 \begin{remark}
-What if I forgot to assign the result of a calculation for further use? We
+What if we forgot to save in a variable the result of a previous calculation? We
 can do the following:
 \begin{lstlisting}
-gap> 2*(5+1)-6;                                                       
+gap> 2*(5+1)-6;                                             
 6
 gap> n := last;
 6
 \end{lstlisting}
-One also has \lstinline{last2} and \lstinline{last3}. 
+Note that \lstinline{last} returns the very last output. 
+One also has \lstinline{last2} and \lstinline{last3} to obtain the second to last 
+and third to last outputs, respectively. 
 \end{remark}
 
-\subsection*{Conditionals}
+{\color{red} Explicar mejor
+Also in each statement the time spent by the last statement, whether it produced a value or not, is available in the variable time. This is an integer that holds the number of milliseconds. Similarly the amount of memory allocated during that statement (in bytes) is stored in the variable memory\_allocated. The variables last, last2, last3, time and memory\_allocated are all write-protected.
+}
 
-There are three very important operators: \lstinline{not}, \lstinline{and},
+The function \lstinline{IsBound} checks if 
+a given variable points to a value (i.e. if the variable is already defined). 
+The function \lstinline{Unbind} deletes an identifier.  
+Thus \lstinline{Unbind} can be used 
+to get rid of unwanted large objects:
+\begin{lstlisting}
+gap> IsBound(my_variable);
+false
+gap> my_variable := 100;;
+gap> IsBound(my_variable);
+true
+gap> Unbind(my_variable);
+gap> IsBound(my_variable);
+false
+\end{lstlisting}
+
+\subsection{Conditionals}
+
+There are three important logical operators: \lstinline{not}, \lstinline{and},
 \lstinline{or}.  We also have comparison operators; for example the expression
 \lstinline{x<>y} returns \lstinline{true} if \lstinline{x} and \lstinline{y}
-are different, and \lstinline{false} otherwise.  Here we have
-some easy examples: 
+are different and \lstinline{false} otherwise.  Examples:
 \begin{lstlisting}
 gap> x := 20;; y := 10;;
 gap> x <> y;
@@ -387,6 +323,20 @@ gap> 100^300 > 300^100;
 true
 \end{lstlisting}
 \end{example}
+
+The construction \lstinline{if ... then ... fi} is easy to understand 
+if we look at particular examples. We 
+refer to Example~\ref{exa:function} below, where
+the function
+\[
+f\colon n\mapsto\begin{cases}
+	n^3 & \text{if $n\equiv0\bmod 3$},\\
+	n^5 & \text{if $n\equiv1\bmod 3$},\\
+	0 & \text{otherwise},
+\end{cases}
+\]
+is constructed. 
+
 
 %%\begin{block}
 %%\label{block:condicional}
@@ -427,22 +377,22 @@ true
 %%veremos cómo definir funciones.
 %%\end{block}
 
-\subsection*{Functions}
+\subsection{Functions}
 
 There are two equivalent ways of constructing functions. For example, to
-construct the map $x\mapsto x^2$ either we can use the {\it one-line definition}
+construct the map $x\mapsto x^2$ either we can use the \emph{one-line definition}
 \begin{lstlisting}
 gap> square := x->x^2;
 function( x ) ... end
 \end{lstlisting}
-or the {\it classical}
+or the more natural 
 \begin{lstlisting}
 gap> square := function(x)
 > return x^2;
 > end;
 function( x ) ... end
 \end{lstlisting}
-In both cases we will obtain the same result; with any definition:
+In both cases, we will obtain the same result:
 \begin{lstlisting}
 gap> square(4);
 16
@@ -451,7 +401,14 @@ gap> square(-4);
 gap> square(-5);
 25
 \end{lstlisting}
-One can also define functions with no arguments. A classical example is:
+
+\begin{remark}
+Our functions will return the square of the object \lstinline{x} whenever this makes sense. We do not 
+need to specify the type of \lstinline{x}.  
+\end{remark}
+
+One can also define functions with no arguments. 
+The following is a classic example:
 \begin{lstlisting}
 gap> hi := function()
 > Display("Hello world");
@@ -462,23 +419,24 @@ Hello world
 \end{lstlisting}
 
 \begin{example}
+\label{exa:function}
 Let us write a function to compute the map 
 \[
 f\colon n\mapsto\begin{cases}
-	n^3 & \text{si $n\equiv0\bmod 3$},\\
-	n^5 & \text{si $n\equiv1\bmod 3$},\\
-	0 & \text{otherwise}.
+	n^3 & \text{if $n\equiv0\bmod 3$},\\
+	n^5 & \text{if $n\equiv1\bmod 3$},\\
+	0 & \text{otherwise.}
 \end{cases}
 \]
 Here is the code and some experiments:
 \begin{lstlisting}
 gap> f := function(n)
 > if n mod 3 = 0 then
-> return n^3;
+>   return n^3;
 > elif n mod 3 = 1 then
-> return n^5;
+>   return n^5;
 > else
-> return 0;
+>   return 0;
 > fi;
 > end;
 function( n ) ... end
@@ -498,104 +456,229 @@ The Fibonacci sequence $f_n$ is defined recursively as $f_1=f_2=1$ and
 \[
 f_{n+1}=f_n+f_{n-1}
 \]
-for $n\geq2$. The following function computes Fibonacci numbers:
+for $n\geq2$. The following function computes the Fibonacci numbers:
 \begin{lstlisting}
-gap> fibonacci := function(n)
+gap> MyFibonacci := function(n)
 > if n = 1 or n = 2 then
-> return 1;
+>   return 1;
 > else
-> return fibonacci(n-1)+fibonacci(n-2);
+>   return MyFibonacci(n-1)+MyFibonacci(n-2);
 > fi;
 > end;
 function( n ) ... end
-gap> fibonacci(10);
+gap> MyFibonacci(10);
 55
 \end{lstlisting}
-Question: Can you compute $f_{100}$ with this method?
+Note that with this method is impossible to compute higher terms 
+of the sequence. So, for example, we cannot compute 
+the value of $f_{100}$. Do you know why?
 \end{example}
 
-\begin{example}[Collatz conjecture]
+\begin{example}[Collatz' conjecture]
 	\index{Collatz!conjecture}
 	\label{example:Collatz}
-	For $n\in\N$ let 
+	For a positive integer $n$ let 
 	\[
 		f(n)=\begin{cases}
-			n/2 & \text{if $n$ es even},\\
+			n/2 & \text{if $n$ is even},\\
 			3n+1 & \text{if $n$ is odd}.
 		\end{cases}
 	\]
-	The conjecture is that no matter what number $n$ you start with, there is
-	$m\in\N$ such that $f^m(n)=1$, where $f^m=f\circ\cdots\circ f$ ($m$-times).
+	The conjecture states that for any positive integer $n$, there exists  
+	$m\geq1$ such that $f^m(n)=1$, where $f^m=f\circ\cdots\circ f$ ($m$-times).
 	Let us test the conjecture for $n=5$:
 \begin{lstlisting}
 gap> f := function(n)
 > if n mod 2 = 0 then
-> return n/2;
+>   return n/2;
 > else 
-> return 3*n+1;
+>   return 3*n+1;
 > fi;
 > end;
 function( n ) ... end
 gap> f(f(f(f(f(5)))));
 1
 \end{lstlisting}
-Exercise: Write a function that for each $n$ returns the smallest integer $m$ such that $f^m(n)=1$.
 
-\medskip
-A possible solution uses recursive functions:
+An interesting exercise is to 
+write a function that for each $n$ returns the smallest integer $m$ such that $f^m(n)=1$. A possible solution uses recursive functions:
 \begin{lstlisting}
 gap> g:=function(n)
 > if f(n)=1 then
-> return 1;
+>   return 1;
 > else
-> return 1+g(f(n));
+>   return 1+g(f(n));
 > fi;
 > end;
 function( n ) ... end
-\end{lstlisting}
-
-A different approach, which uses ideas we will develop on page
-\pageref{page:do}, can be given as follows:
-\begin{lstlisting}
-gap> g:=function(n)
-> m:=1;
-> while f(n)>1 do
-> m:=m+1;
-> n:=f(n);
-> od;
-> return m;
-> end;
-> function( n ) ... end
 \end{lstlisting}
 \end{example}
 
 
 
-\subsection*{Strings}
+\subsection{Loops}
+\label{page:do}
+We will explain how loops work with the following 
+straightforward problem. We
+want to check that 
+\[
+    1+2+3+\cdots+100=5050.
+\]
+We can use the function \lstinline{Sum}:
+\begin{lstlisting}
+gap> Sum([1..100]);
+5050
+\end{lstlisting}
+An alternative way of performing this computation
+is by using the for loop structure \lstinline{for ... do ... od}:
+\begin{lstlisting}
+gap> s := 0;;
+gap> for k in [1..100] do
+> s := s+k;
+> od;
+gap> s;
+5050
+\end{lstlisting}
+We can also use the while loop structure:
+\lstinline{while ... do ... od}:
+\begin{lstlisting}
+gap> s := 0;;
+gap> k := 1;;
+gap> while k<=100 do
+> s := s+k;
+> k := k+1;
+> od;
+gap> s;
+5050
+\end{lstlisting}
+Alternatively, we can also use the structure 
+\lstinline{repeat ... until}:
+\begin{lstlisting}
+gap> s := 0;;
+gap> k := 1;;
+gap> repeat
+> s := s+k;
+> k := k+1;
+> until k>100;
+gap> s;
+5050
+\end{lstlisting}
+
+Now let us compute (again) Fibonacci numbers. This is computationally 
+more efficient 
+than the method of
+Example~\ref{exa:Fibonacci:1}. 
+
+\begin{example}
+\label{exa:Fibonacci:2}
+\index{Fibonacci sequence}
+Let us write a non-recursive function to compute Fibonacci numbers: 
+\begin{lstlisting}
+gap> MyFibonacci := function(n)                                                 
+> local k, x, y, tmp;
+> x := 1;
+> y := 1;
+> for k in [3..n] do
+>   tmp := y;
+>   y := x+y;
+>   x := tmp;
+> od; 
+> return y;
+> end;
+function( n ) ... end
+gap> MyFibonacci(100);
+354224848179261915075
+gap> MyFibonacci(1000);
+434665576869374564356885276750406258025646605173\
+717804024817290895365554179490518904038798400792\
+551692959225930803226347752096896232398733224711\
+616429964409065331879382989696499285160037044761\
+37795166849228875
+\end{lstlisting}
+In the previous function, to defined 
+local variables. 
+The local statement must be the first statement of a function definition. The nature of local variables in a function  prevents the value of the variables from being overwritten outside this particular function.
+\end{example}
+
+\begin{example}
+\label{exa:100}
+Divisors of a given integer can be obtained with \lstinline{DivisorsInt}.  In this
+example we run over the divisors of $100$ and print only those that are
+odd.
+\begin{lstlisting}
+gap> Filtered(DivisorsInt(100), x->x mod 2 = 1);
+[ 1, 5, 25 ]
+\end{lstlisting}
+Similarly 
+\begin{lstlisting}
+gap> for d in DivisorsInt(100) do
+> if d mod 2 = 1 then
+>   Display(d);
+> fi;
+> od;
+1
+5
+25
+\end{lstlisting}
+With \lstinline{continue} one can skip iterations. An equivalent (but less
+elegant) approach to the problem of Example~\ref{exa:100} is the following:
+\begin{lstlisting}
+gap> for d in DivisorsInt(100) do
+> if d mod 2 = 0 then
+>   continue;
+> fi;
+> Display(d);
+> od;
+1
+5
+25
+\end{lstlisting}
+\end{example}
+
+With \lstinline{break} one breaks a loop. In the following example we run over
+the numbers $1,2,\dots,100$ and stop when a number whose square is divisible by
+$20$ appears:
+\begin{lstlisting}
+gap> First([1..100], x->x^2 mod 20 = 0);
+10
+\end{lstlisting}
+Similarly:
+\begin{lstlisting}
+gap> for k in [1..100] do
+> if k^2 mod 20 = 0 then
+>   Display(k);
+>   break;
+> fi;
+> od;
+10
+\end{lstlisting}
+
+\subsection{Strings}
 
 A string is an expression delimited by the symbol 
 \lstinline{"} (quotation mark): 
 \begin{lstlisting}
-gap> string := "hello world";
+gap> mystring := "hello world";
 hello world
 \end{lstlisting}
-To extract one character one uses the expression \lstinline{string[position]};
-to extract substrings \lstinline|string{positions}|. Examples:
+To extract one character one uses the expression \lstinline{mystring[position]};
+to extract substrings \lstinline|mystring{positions}|. Let us see
+some examples:
 \begin{lstlisting}
-gap> string[1];
+gap> mystring[1];
 'h'
-gap> string[3];
+gap> mystring[3];
 'l'
-gap> string{[1,2,3,4,5]};
+gap> mystring{[1,2,3,4,5]};
 "hello"
-gap> string{[7,8,9,10,11]};
+gap> mystring{[7,8,9,10,11]};
 "world"
-gap> string{[11,10,9,8,7,6,5,4,3,2,1]};
+gap> mystring{[11,10,9,8,7,6,5,4,3,2,1]};
 "dlrow olleh"
 \end{lstlisting}
 
-There are several functions that allow us to work with strings.
-\lstinline{String} converts anything into a string of characters.
+Several functions allow us to work with strings. The function 
+\lstinline{String} converts anything into a string of characters:
 \begin{lstlisting}
 gap> String(1234);
 "1234"
@@ -606,26 +689,19 @@ gap> String([1,2,3]);
 gap> String(true);
 "true"
 \end{lstlisting}
-%%La funcion \lstinline{LowercaseString} (resp. \lstinline{UppercaseString})
-%%devuelve una cadena de caracteres que resulta de convertir el argumento a
-%%minúsculas (resp. mayúsculas). Por ejemplo:
-%%\begin{lstlisting}
-%%gap> LowercaseString("Hola Mundo");
-%%"hola mundo"
-%%gap> UppercaseString("Hola Mundo");
-%%"HOLA MUNDO"
-%%\end{lstlisting}
-%La función 
+
 The function \lstinline{ReplacedString} replace substrings: 
 \begin{lstlisting}
 gap> ReplacedString("Hello world", "world", "all");
 "Hello all"
 \end{lstlisting}
 
-\lstinline{Print} allows us to print data in the screen. 
+The function \lstinline{Print} allows us to 
+print data (in this case, a string) 
+on the screen:
 \begin{lstlisting}
-gap> string := "Hello world";;
-gap> Print(string);
+gap> mystring := "Hello world";;
+gap> Print(mystring);
 Hello world
 \end{lstlisting}
 Let us see another example:
@@ -636,7 +712,7 @@ gap> Print(n, " times ", m, " is ", n*m);
 100 times 5 is 500
 \end{lstlisting}
 The function \lstinline{Print} can be used with some special characters. For example, 
-\lstinline{\n} means ``new line''. Examples:
+\lstinline{\n} means ``new line'':
 \begin{lstlisting}
 gap> Print("Hello\nworld");
 Hello
@@ -649,10 +725,13 @@ to a file. It is important to remark that \lstinline{PrintTo} will overwrite an 
 %% JoinStringsWithSeparator
 %% SplitString
 
-\subsection*{Lists}
+\subsection{Lists}
 
-A list is an ordered sequence of objects (maybe of different type), including
-empty places. Lists are written using square brackets. Examples:
+A list is an ordered sequence of objects (maybe of different types), including
+empty places. Thus, for example, an array of numbers 
+is just a list of numbers. Lists are one of the most important
+objects in~\GAP. 
+Lists are written using square brackets:
 \begin{lstlisting}
 gap> IsList([1, 2, 3]);
 true
@@ -664,18 +743,37 @@ gap> 2 in [1, 2, 5, 4, 10];
 true
 gap> 3 in [0,10,"abc"];
 false
+gap> ListWithIdenticalEntries(3, "a");
+[ "a", "a", "a" ]
+\end{lstlisting}
+
+We can create lists in a clean way 
+by using list comprehension. 
+The following examples illustrate 
+different ways to construct lists and 
+need no
+further explanations:
+\begin{lstlisting}
+gap> List([1..10], x->-x);
+[ -1, -2, -3, -4, -5, -6, -7, -8, -9, -10 ]
+gap> List([1, 2, 3, 4, 5], x->x^2);
+[ 1, 4, 9, 16, 25 ]
+gap> List([1, 2, 3, 4, 5], IsPrime);
+[ false, true, true, false, true ]
+gap> Filtered([1..20], IsPrime);
+[ 2, 3, 5, 7, 11, 13, 17, 19 ]
 \end{lstlisting}
 
 \begin{example}
 Let us create a list with the first six prime numbers. \lstinline{Size} or
-\lstinline{Length} return the number of non-empty elements of the list. 
+\lstinline{Length} return the number of non-empty elements of the list:
 \begin{lstlisting}
 gap> primes := [2, 3, 5, 7, 11, 13];
 [ 2, 3, 5, 7, 11, 13 ]
 gap> Size(primes);
 6
 \end{lstlisting}
-To access to an element inside a list one should refer to the position. 
+To access an element inside a list one should refer to the position:
 \begin{lstlisting}
 gap> primes[1];
 2
@@ -683,7 +781,7 @@ gap> primes[2];
 3
 \end{lstlisting}
 Let us obtain the sublist consisting of the elements in the second, third and
-fifth position:
+fifth positions:
 \begin{lstlisting}
 gap> primes;
 [ 2, 3, 5, 7, 11, 13 ]
@@ -699,8 +797,8 @@ gap> list{[1,3,5]};
 \end{lstlisting}
 To find elements inside a list one uses \lstinline{Position}. If the element we
 are looking for does not belong to the list, \lstinline{Position} will return
-\lstinline{fail}; otherwise it will return the first place where the element
-appears. Let us look at some examples:
+\lstinline{fail}; otherwise it will return the first occurence of the element. 
+Let us look at some examples:
 \begin{lstlisting}
 gap> Position([5, 4, 6, 3, 7, 3, 7], 5);
 1
@@ -710,8 +808,9 @@ gap> Position([5, 4, 6, 3, 7, 3, 7], 7);
 5
 \end{lstlisting}
 
-\lstinline{Add} and \lstinline{Append} are used to add elements at the end of a
-list. To remove elements from a list one uses \lstinline{Remove}; examples:
+The functions \lstinline{Add} and \lstinline{Append} are used to add elements at the end of a
+list. The following examples show how these functions  
+work:
 \begin{lstlisting}
 gap> primes;
 [ 2, 3, 5, 7, 11, 13 ]
@@ -727,15 +826,30 @@ gap> # Add 23 and 29 at the end
 gap> Append(primes, [23, 29]);
 gap> primes;
 [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
+\end{lstlisting}
+\end{example}
+
+To remove elements from a list one uses \lstinline{Remove}:
+\begin{lstlisting}
 gap> # Remove the first element of the list
 gap> Remove(primes, 1);;
 gap> primes;
 [ 3, 5, 7, 11, 13, 17, 19, 23, 29 ]
 \end{lstlisting}
-\end{example}
 
-\lstinline{Concatenation} concatenates two or more lists. This function returns a new list 
-consisting of the lists used in the argument. 
+For lists \lstinline{IsBound} can be used to 
+check whether entries are bound:
+\begin{lstlisting}
+gap> l := [1..5];;
+gap> IsBound(l[5]);
+true
+gap> IsBound(l[6]);
+false
+\end{lstlisting}
+
+The function \lstinline{Concatenation} concatenates 
+two or more lists. This function returns a new list 
+consisting of the lists used in the argument:
 \begin{lstlisting}
 gap> Concatenation([1,2,3],[4,5,6]);
 [ 1, 2, 3, 4, 5, 6 ]
@@ -744,15 +858,12 @@ gap> Concatenation([1,2,3],[4,5,6]);
 \begin{remark}
   Is there any difference between \lstinline{Append} and
   \lstinline{Concatenation}? Yes!  The function \lstinline{Concatenation} does
-  not modify the lists used in the argument. \lstinline{Append} does.
+  not modify the lists used in the argument, while
+  \lstinline{Append} does it.
 \end{remark}
 
-%A diferencia de \lstinline{Append}, la función \lstinline{Concatenation} no
-%modifica las listas que se utilizan como argumento. 
-
-\lstinline{Collected} returns a new list where each element 
-of the original list appears with multiplicity. 
-Example: 
+The function \lstinline{Collected} returns a new list where each element 
+of the original list appears with multiplicity:
 \begin{lstlisting}
 gap> Factors(720);
 [ 2, 2, 2, 2, 3, 3, 5 ]
@@ -762,7 +873,7 @@ gap> Collected(last);
 
 To make a copy of a list one should use the function \lstinline{ShallowCopy}.
 The following example shows the difference between \lstinline{ShallowCopy} and
-the assignment operator. 
+the assignment operator:
 \begin{lstlisting}
 gap> a := [1, 2, 3, 4];;
 gap> b := a;;
@@ -781,38 +892,46 @@ gap> b;
 [ 1, 2, 3, 4, 5, 10 ]
 \end{lstlisting}
 
+\begin{remark}
+The function \lstinline{ShallowCopy} takes a picture
+of the list in a particular moment. 
+In our example, we have a list \lstinline{a}, a mirror image of \lstinline{a} called \lstinline{b},
+and a photograph (shallow copy) of \lstinline{a}
+called \lstinline{c}. If we modify the lists \lstinline{a} or
+\lstinline{b}, then both \lstinline{a} and \lstinline{b}
+change, but not the list \lstinline{c}.
+Conversely, modifying
+\lstinline{c} will not change \lstinline{a} and \lstinline{b}.
+\end{remark}
+
 The function \lstinline{Reversed} returns a list
 containing the elements of our list in reversed order. 
 In the following example 
 the variable \lstinline{list} will not be modified by the function \lstinline{Reversed}:
-%devuelve una lista que se obtiene al invertir
-%el orden de los elementos de la lista que se envía como argumento. En el
-%ejemplo siguiente observamos que \lstinline{list} no se
-%modifica con la función \lstinline{Reversed}:
 \begin{lstlisting}
-gap> list := [2, 4, 7, 3];;
-gap> Reversed(list);
+gap> mylist := [2, 4, 7, 3];;
+gap> Reversed(mylist);
 [ 3, 7, 4, 2 ]
-gap> list;
+gap> mylist;
 [ 2, 4, 7, 3 ]
 \end{lstlisting}
-\lstinline{SortedList} returns a new list where the elements are sorted with
+The function \lstinline{SortedList} returns a new list where the elements are sorted with
 respect to the operator \lstinline{<=}. In the following example one sees that
 \lstinline{SortedList} will not modify the value of the variable
-\lstinline{list}:
+\lstinline{mylist}:
 \begin{lstlisting}
-gap> list := [2, 4, 7, 3];;
-gap> SortedList(list);
+gap> mylist := [2, 4, 7, 3];;
+gap> SortedList(mylist);
 [ 2, 3, 4, 7 ]
-gap> list;
+gap> mylist;
 [ 2, 4, 7, 3 ]
 \end{lstlisting}
-\lstinline{Sort} sorts a list in increasing order. Can you recognize the
-difference between \lstinline{Sort} and \lstinline{SortedList}?
+The function \lstinline{Sort} sorts a list in increasing order. Can you recognize the
+difference between \lstinline{Sort} and \lstinline{SortedList}? 
 \begin{lstlisting}
-gap> list := [2, 4, 7, 3];;
-gap> Sort(list);
-gap> list;
+gap> mylist := [2, 4, 7, 3];;
+gap> Sort(mylist);
+gap> mylist;
 [ 2, 3, 4, 7 ]
 \end{lstlisting}
 
@@ -822,20 +941,33 @@ gap> list;
   type and comparable with respect to the operator \lstinline{<=}. 
 \end{remark}
 
-\lstinline{Filtered} allows us to obtain the elements of a list that satisfy a
-particular given property.  The function \lstinline{Number} returns the number
-of elements of a list  that satisfy a given property.  \lstinline{First}
-returns the first element of a list that satisfy a given property. Some examples are as follows:
+The function \lstinline{Filtered} allows us to obtain the elements of a list that satisfy a particular given property; if we just want to 
+count such elements we use \lstinline{Number}.
+In the same vein, \lstinline{First}
+returns the first element of a list 
+that satisfies a given property. 
+Here we have some examples:
 \begin{lstlisting}
-gap> list := [1, 2, 3, 4, 5];;
-gap> Filtered(list, x->x mod 2 = 0);
+gap> mylist := [1, 2, 3, 4, 5];;
+gap> Filtered(mylist, x->x mod 2 = 0);
 [ 2, 4 ]
-gap> Number(list, x->x mod 2 = 0);
+gap> Number(mylist, x->x mod 2 = 0);
 2
-gap> Filtered(list, x->x mod 2 = 1);
+gap> Filtered(mylist, x->x mod 2 = 1);
 [ 1, 3, 5 ]
-gap> First(list, x->x mod 2 = 0);
+gap> Filtered(mylist, IsOddInt);
+[ 1, 3, 5 ]
+gap> First(mylist, x->x mod 2 = 0);
 2
+\end{lstlisting}
+One can also perform arithmetic operations on lists:
+\begin{lstlisting}
+gap> Sum([1..5], x->2*x);
+30
+gap> Sum(ListOfDigits(342));
+9
+gap> Product([1..5], x->x^2);
+14400
 \end{lstlisting}
 
 \begin{example}
@@ -851,24 +983,43 @@ gap> Number(Factors(18000), x->x=2);
 \end{lstlisting}
 \end{example}
 
-There are very nice ways to create lists. The following examples need no
-further explanations.
+The function \lstinline{ForAny} returns \lstinline{true} if there is an element in the list 
+satisfying the required condition and 
+\lstinline{false} otherwise. 
+Similarly, 
+\lstinline{ForAll} returns \lstinline{true} if all the
+elements of the list satisfy the required condition and 
+\lstinline{false} otherwise. The following examples
+illustrate how these functions work: 
 \begin{lstlisting}
-gap> List([1, 2, 3, 4, 5], x->x^2);
-[ 1, 4, 9, 16, 25 ]
-gap> List([1, 2, 3, 4, 5], IsPrime);
-[ false, true, true, false, true ]
+gap> ForAny([2,4,6,8,10], x->x mod 2 = 0);
+true
+gap> ForAll([2,4,6,8,10], x->(x > 0));
+true
+gap> ForAny([2,3,4,5], IsPrime);
+true
+gap> ForAll([2,3,4,5], IsPrime);
+false
+gap> ForAny([false, false], x->x=true);
+false
+gap> ForAny([true, false], x->x=true);
+true
+gap> ForAll([true, false], x->x=true);
+false
+gap> ForAll([true, true], x->x=true);
+true
 \end{lstlisting}
 
-\subsection*{Ranges} 
 
-Ranges are lists where the difference between two
-consecutive integers is a constant.  Examples:
+\subsection{Ranges} 
+
+Ranges are lists of integers where the difference between any two
+consecutive elements is constant:
 \begin{lstlisting}
-gap> Elements([1,3..11]);
-[ 1, 3, 5, 7, 9, 11 ]
 gap> Elements([1..5]);
 [ 1, 2, 3, 4, 5 ]
+gap> Elements([1,3..11]);
+[ 1, 3, 5, 7, 9, 11 ]
 gap> Elements([0,-2..-8]);
 [ -8, -6, -4, -2, 0 ]
 gap> IsRange([1..100]);
@@ -879,7 +1030,7 @@ false
 
 We can use \lstinline{Elements} to list all the elements in a given range.
 Conversely, \lstinline{ConvertToRangeRep} converts (if possible) a list into a
-range.  Examples:
+range:
 \begin{lstlisting}
 gap> list := [ 1, 2, 3, 4, 5 ];;
 gap> ConvertToRangeRep(list);;
@@ -893,38 +1044,47 @@ gap> list;
 [ 7, 11 .. 23 ]
 \end{lstlisting}
 
-\subsection*{Sets} 
+\subsection{Sets} 
 
-A set is a particular type of ordered list that contains no gaps with no
-repetitions.  To convert a list to a set one uses \lstinline{Set}.  
+A set is a particular type of ordered list with no
+repetitions nor gaps.  
+To convert a list into a set, one uses \lstinline{Set}: 
 \begin{lstlisting}
-gap> list := [1, 2, 3, 1, 5, 6, 2];;
-gap> IsSet(list);
+gap> mylist := [1, 2, 3, 1, 5, 6, 2];;
+gap> IsSet(mylist);
 false
-gap> Set(list);
+gap> Set(mylist);
 [ 1, 2, 3, 5, 6 ]
+gap> Set([1,2,,,3,2,,1]);
+[ 1, 2, 3 ]
+gap> Set([1..10], x->x mod 3);
+[ 0, 1, 2 ]
 \end{lstlisting}
 
 To add elements use 
-\lstinline{AddSet} and \lstinline{UniteSet}. To remove them, 
-\lstinline{RemoveSet}. Examples:
+\lstinline{AddSet} and \lstinline{UniteSet}. To remove an element, use the function 
+\lstinline{RemoveSet}.
+These commands modify the set given as a  parameter.
+Here we have some examples:
 \begin{lstlisting}
-gap> set := Set([1, 2, 4, 5]);;
+gap> myset := Set([1, 2, 4, 5]);;
 gap> # Let us add the number 10 
-gap> AddSet(set, 10);
-gap> set;
+gap> AddSet(myset, 10);
+gap> myset;
 [ 1, 2, 4, 5, 10 ]
 gap> # Let us remove the number 4 
-gap> RemoveSet(set, 4);
-gap> set;
+gap> RemoveSet(myset, 4);
+gap> myset;
 [ 1, 2, 5, 10 ]
-gap> UniteSet(set, [1, 1, 5, 6]);
-gap> set;
+gap> UniteSet(myset, [1, 1, 5, 6]);
+gap> myset;
 [ 1, 2, 5, 6, 10 ]
 \end{lstlisting}
-To perform basic set operations one uses
+One uses
 \lstinline{Union}, \lstinline{Intersection},
-\lstinline{Difference} and \lstinline{Cartesian}. Examples: 
+\lstinline{Difference} and \lstinline{Cartesian}
+to perform basic set operations. 
+Examples: 
 \begin{lstlisting}
 gap> S := Set([1, 2, 8, 11]);;
 gap> T := Set([2, 5, 7, 8]);;
@@ -945,7 +1105,11 @@ gap> Cartesian(S, T);
   [ 11, 7 ], [ 11, 8 ] ]
 \end{lstlisting}
 
-\subsection*{Records}
+Note that the functions \lstinline{Union}, \lstinline{Intersection} and
+\lstinline{Difference} create new sets, so they 
+do not modify the sets given as parameters.
+
+\subsection{Records}
 
 Records allow us to put several objects in the same structure. Let us say that
 we want to create a structure for the point $(1,2)$ of the plane: 
@@ -958,20 +1122,8 @@ gap> point.y;
 gap> RecNames( point );
 [ "x", "y" ]
 \end{lstlisting}
-%%En el ejemplo siguiente vamos a utilizar \lstinline{RecNames} para sumar uno en
-%%cada componente del registro \lstinline{point} que creamos antes:
-%%\begin{lstlisting}
-%%gap> point := rec( x := 1, y := 2 );;
-%%gap> for r in RecNames(point) do
-%%> point.(r) := point.(r) + 1;
-%%> od;
-%%gap> point;
-%%rec( x := 2, y := 3 )
-%%\end{lstlisting}
-%Puede utilizarse la función 
 The function \lstinline{IsBound} can be used to test whether our structure
-contains a given component.  The function \lstinline{Unbind} removes a variable
-from the memory. Examples:
+contains a given component:
 \begin{lstlisting}
 gap> point := rec( x := 1, y := 2 );;
 gap> IsBound(point.z);
@@ -985,166 +1137,226 @@ gap> Unbind(point.z);
 gap> point;
 rec( x := 1, y := 2 )
 \end{lstlisting}
-%%FIXME: Isbind
 
-\subsection*{Loops}
-\label{page:do}
-Our section of loops will be based on the following very simple problem.  We
-want to check that 
+\section{Other numbers}
+
+\subsection{Floating-point numbers}
+
+\GAP~supports floating-point numbers in machine format. 
+Note that floating-point numbers
+are not rationals. For example,
+the number \lstinline{3} is an integer and 
+\lstinline{3.0} is a float. Every floating-point number
+must contain a decimal digit. To get a rational 
+approximation for a floating-point number one uses 
+the function \lstinline{Rat}. Conversely, the function
+\lstinline{Float} returns a 
+floating-point number from a rational one.   
+Let us show some examples:
+\begin{lstlisting}
+gap> # An approximation of pi
+gap> a := 3.1416;     
+gap> Rat(a);
+3927/1250
+gap> # A better approximation of pi
+gap> b := 4*Atan(1.0);
+3.14159
+gap> Rat(b);
+817696623/260280919
+gap> Float(last);
+3.14159
+gap> Float(1/4);
+0.25
+gap> Float(1/3);
+0.333333
+\end{lstlisting}
+
+One possible application of floating-point numbers
+is related to run-times. 
+
+\begin{example}
+    Let us assume that we have a list 
+    of strings representing run-times (in milliseconds). 
+    Say that 
+    the numbers are 
+    1.0324, 2.4102, 0.2112, and 0.4324. We need to sum up all these numbers:
+\begin{lstlisting}
+gap> times := ["1.0324", "2.4102", "0.2112", "0.4324"];;
+gap> List(times, Float);
+[ 1.0324, 2.4102, 0.2112, 0.4324 ]
+gap> Sum(last);
+4.0862    
+\end{lstlisting}
+\end{example}
+
+\label{section:cyclotomics}
+
+\subsection{Finite fields}
+
+To create the finite field of $p^n$
+elements (here $p$ is a prime number) 
+we use the function \lstinline{GF} (Galois Field).  The
+characteristic of a field can be obtained with \lstinline{Characteristic}: 
+\begin{lstlisting}
+gap> GF(2);
+GF(2)
+gap> GF(4);
+GF(2^2)
+gap> GF(9);
+GF(3^2)
+gap> Characteristic(GF(2));
+2
+gap> Characteristic(GF(9));
+3
+\end{lstlisting}
+
+Let $p$ be a prime number and let $F$ denote 
+the field with $q=p^n$ elements, for some positive integer $n$. 
+The subset 
 \[
-    1+2+3+\cdots+100=5050.
+  \{x\in F:x\ne 0\}
 \]
+is a cyclic group of size $q-1$; say generated by $\zeta$. Then
+$F=\{0,1,\zeta,\zeta^2,\dots,\zeta^{q-2}\}$, so each non-zero element of $F$ is
+then a power of $\zeta$.  
 
-Of course we can use \lstinline{Sum}, which sums all the elements of a list:
+In~\GAP~each non-zero element of the finite field
+\lstinline{GF(q)} will be a power of the generator \lstinline{Z(q)}. The zero
+of \lstinline{GF(q)} will be \lstinline{0*Z(q)} or, equivalently, 
+\lstinline{Zero(GF(q))}. Similarly, 
+\lstinline{One(GF(q))} will be the multiplicative
+neutral element of \lstinline{GF(q)}:
 \begin{lstlisting}
-gap> Sum([1..100]);
-5050
-\end{lstlisting}
-An equivalent way of doing this would be using \lstinline{for ... do ... od}:
-\begin{lstlisting}
-gap> s := 0;;
-gap> for k in [1..100] do
-> s := s+k;
-> od;
-gap> s;
-5050
-\end{lstlisting}
-Yet another equivalent way of doing this is the following:
-\lstinline{while ... do ... od}:
-\begin{lstlisting}
-gap> s := 0;;
-gap> k := 1;;
-gap> while k<=100 do
-> s := s+k;
-> k := k+1;
-> od;
-gap> s;
-5050
-\end{lstlisting}
-Yet another equivalent way of doing this is the following: 
-\lstinline{repeat ... until}:
-\begin{lstlisting}
-gap> s := 0;;
-gap> k := 1;;
-gap> repeat
-> s := s+k;
-> k := k+1;
-> until k>100;
-gap> s;
-5050
-\end{lstlisting}
-
-Now let us compute (again) Fibonacci numbers. This is better than the method of
-Example~\ref{exa:Fibonacci:1}. 
-
-\begin{example}
-\label{exa:Fibonacci:2}
-\index{Fibonacci sequence}
-Let us write a non-recursive function to compute Fibonacci numbers. 
-\begin{lstlisting}
-gap> fibonacci := function(n)                                                 
-> local k, x, y, tmp;
-> x := 1;
-> y := 1;
-> for k in [3..n] do
->   tmp := y;
->   y := x+y;
->   x := tmp;
-> od; 
-> return y;
-> end;
-function( n ) ... end
-gap> fibonacci(100);
-354224848179261915075
-gap> fibonacci(1000);
-434665576869374564356885276750406258025646605173\
-717804024817290895365554179490518904038798400792\
-551692959225930803226347752096896232398733224711\
-616429964409065331879382989696499285160037044761\
-37795166849228875
-\end{lstlisting}
-\end{example}
-
-\begin{example}
-\label{exa:100}
-Divisors of a given integer can be obtained with \lstinline{DivisorsInt}.  In this
-example we run over the divisors of $100$ and print only those that are
-odd.
-\begin{lstlisting}
-gap> Filtered(DivisorsInt(100), x->x mod 2 = 1);
-[ 1, 5, 25 ]
-\end{lstlisting}
-Similarly 
-\begin{lstlisting}
-gap> for d in DivisorsInt(100) do
-> if d mod 2 = 1 then
-> Display(d);
-> fi;
-> od;
-1
-5
-25
-\end{lstlisting}
-With \lstinline{continue} one can skip iterations. An equivalent (but less
-elegant) approach to the problem of Example~\ref{exa:100} is the following:
-\begin{lstlisting}
-gap> for d in DivisorsInt(100) do
-> if d mod 2 = 0 then
-> continue;
-> fi;
-> Display(d);
-> od;
-1
-5
-25
-\end{lstlisting}
-\end{example}
-
-With \lstinline{break} one breaks a loop. In the following example we run over
-the numbers $1,2,\dots,100$ and stop when a number whose square is divisible by
-$20$ appears. 
-\begin{lstlisting}
-gap> First([1..100], x->x^2 mod 20 = 0);
-10
-\end{lstlisting}
-Similarly:
-\begin{lstlisting}
-gap> for k in [1..100] do
-> if k^2 mod 20 = 0 then
-> Display(k);
-> break;
-> fi;
-> od;
-10
-\end{lstlisting}
-
-\lstinline{ForAny} returns \lstinline{true} if there is an element in the list 
-satisfying the required condition and 
-\lstinline{false} otherwise. 
-Similarly 
-\lstinline{ForAll} returns \lstinline{true} if all the
-elements of the list satisfy the required condition and 
-\lstinline{false} otherwise. Examples:
-\begin{lstlisting}
-gap> ForAny([2,4,6,8,10], x->x mod 2 = 0);
-true
-gap> ForAll([2,4,6,8,10], x->(x > 0));
-true
-gap> ForAny([2,3,4,5], IsPrime);
-true
-gap> ForAll([2,3,4,5], IsPrime);
+gap> Size(GF(4));
+4
+gap> Elements(GF(4));
+[ 0*Z(2), Z(2)^0, Z(2^2), Z(2^2)^2 ]
+gap> Z(4);
+Z(2^2)
+gap> Inverse(Z(4));
+Z(2^2)^2
+gap> Zero(GF(4));
+0*Z(2)
+gap> 0 in GF(4);
 false
+gap> Zero(Rationals);
+0
+gap> One(GF(4));
+Z(2)^0
+gap> 1 in GF(4);
+false
+gap> One(Rationals);
+1
+\end{lstlisting}
+
+If $p$ is a prime number, it is natural to identify the field $\F_p$
+with the ring $\Z/p$ of integers modulo $p$. 
+This identification can be done with 
+the function \lstinline{Int}:
+\begin{lstlisting}
+gap> Elements(GF(5));
+[ 0*Z(5), Z(5)^0, Z(5), Z(5)^2, Z(5)^3 ]
+gap> Int(Z(5)^0);
+1
+gap> Int(Z(5)^1);
+2
+gap> Int(Z(5)^2);
+4
+gap> Int(Z(5)^3);
+3
+\end{lstlisting}
+
+\begin{remark}
+The representation for elements of finite fields 
+mentioned before works for fields of 
+size $\leq 2^{16}$. Elements of bigger finite fields will 
+use a different representation:
+\begin{lstlisting}
+gap> Random(GF(2^16));
+Z(2^16)^233
+gap> x := Random(GF(2^17));
+z+z4+z5+z6+z7+z8+z9+z10+z11+z13+z15+z16
+gap> y := Random(GF(3^11));
+2+z2+z4+z6+2z7+2z8+z9+z10
+\end{lstlisting}
+The random element of the finite field $\F_{2^{17}}$ of size $2^{17}$ is
+\[
+x = z+z^4+z^5+z^6+z^7+z^8+z^9+z^{10}+z^{11}+z^{13}+z^{15}+z^{16},
+\]
+where $z$ is a primitive root that is  
+a generator of the multiplicative group of $\F_{2^{17}}$. 
+Similarly, 
+the random element of the field $\F_{3^{11}}$ is 
+\[
+y=2+z^2+z^4+z^6+2z^7+2z^8+z^9+z^{10},
+\]
+where $z$ is a primitive root. 
+\end{remark}
+
+\subsection{Cyclotomic numbers}
+
+We can also work with cyclotomic fields. The function  \lstinline{CF} creates a cyclotomic
+field. To create primitive roots of $1$ one uses the function \lstinline{E}.
+More precisely: \lstinline{E(n)} returns $e^{2\pi i/n}$. Typically, cyclotomic
+numbers will be represented as rational linear combinations of primitive roots
+of $1$. Let us see some examples:
+\begin{lstlisting}
+gap> Characteristic(CF(3));
+0
+gap> Characteristic(CF(4));
+0
+gap> E(6) in Rationals;
+false 
+gap> E(6) in Cyclotomics;
+true
+gap> E(3) in CF(3);
+true
+gap> E(3) in CF(4);
+false
+gap> E(6);
+-E(3)^2
+\end{lstlisting}
+
+In general, most of the basic arithmetic operations that we saw at the beginning of this section can be carried out with cyclotomic numbers:
+\begin{lstlisting}
+gap> E(3)^2+E(3);
+-1
+gap> E(5)^5-E(5);
+-2*E(5)-E(5)^2-E(5)^3-E(5)^4
+\end{lstlisting}
+The functions \lstinline{Inverse} and \lstinline{AdditiveInverse} behave well
+with cyclotomic numbers:
+\begin{lstlisting}
+gap> AdditiveInverse(E(7));
+-E(7)
+gap> Inverse(E(7));
+E(7)^6
+\end{lstlisting}
+With cyclotomic numbers we can also compute square roots:
+\begin{lstlisting}
+gap> Sqrt(-1);
+E(4)
+gap> Sqrt(2);
+E(8)-E(8)^3
+gap> Sqrt(7);
+E(28)^3-E(28)^11-E(28)^15+E(28)^19-E(28)^23+E(28)^27
 \end{lstlisting}
 
 \section{Permutations}
 \label{permutations}
 \index{Permutation}
 
-Let $n\in\N$. A \textbf{permutation} in $n$ letters is a bijective map
-$\sigma\colon\{1,\dots,n\}\to\{1,\dots,n\}$. For example, the permutation
+Let $n$ be a positive integer. A \textbf{permutation} in $n$ letters is a bijective map
+\[
+\sigma\colon\{1,\dots,n\}\to\{1,\dots,n\}.
+\]
+
+\index{$\Sym_n$}
+We write $\Sym_n$ to denote the set of permutations $\sigma\colon\{1,\dots,n\}\to\{1,\dots,n\}$.
+
+For example, the permutation
 $\binom{1234}{3124}$ is the bijective map $1\mapsto 3$, $2\mapsto 1$,
 $3\mapsto 2$ and $4\mapsto 4$. 
-%Let $\Sym_n$ be the set of permutations $\sigma\colon\{1,\dots,n\}\to\{1,\dots,n\}$.
 Usually one writes a permutation as a product of disjoint cycles. For example:
 \begin{align*}
 &\binom{1234}{2413}=(1243),
@@ -1166,8 +1378,6 @@ gap> IsPerm([1,2,3,4]);
 false
 \end{lstlisting}
 
-%The natural action of a permutation $\sigma$ on $\{1,\dots,n\}$ is a right action!
-
 The image of an element \lstinline{i} under the natural right action of a
 permutation \lstinline{p} is \lstinline{i^p}. The preimage of the element
 \lstinline{i} under \lstinline{p} can be obtained with \lstinline{i/p}. In the
@@ -1188,8 +1398,7 @@ as the following code shows:
 gap> (1,2,3) * (2,3,4);
 (1,3)(2,4)
 \end{lstlisting}
-To obtain the inverse of a permutation one uses 
-\lstinline{Inverse}: 
+There are two ways of computing inverses of permutations:
 \begin{lstlisting}
 gap> Inverse((1,2,3));
 (1,3,2)
@@ -1197,11 +1406,30 @@ gap> (1,2,3)^(-1);
 (1,3,2)
 \end{lstlisting}
 
-Let $\sigma$ be a permutation written as a product of disjoint cycles.  The
+\begin{example}
+    The function \lstinline{Permuted} returns a new list that contains 
+    the elements of our list permuted according to 
+    the given permutation perm:
+\begin{lstlisting}
+gap> Permuted([10..15], (1,2));
+[ 11, 10, 12, 13, 14, 15 ]
+gap> p := (1,2,3);;
+gap> a := [3,2,10,5];;
+gap> b := Permuted(a, (1,2,3));
+[ 10, 3, 2, 5 ]
+gap> # We check that b[x^p]=a[x] for all x
+gap> List([1..4], x->b[x^p])=a;
+true
+\end{lstlisting}
+\end{example}
+
+Let $\sigma$ be a permutation, written as a product of disjoint cycles.  The
 function \lstinline{ListPerm} returns a list containing $\sigma(i)$ at position
-$i$.  Conversely, any list of this type can be transformed into a permutation
+$i$.  Conversely, any list representing a permutation (i.e. of size $n$ containing 
+the integers from $1$ to $n$) 
+can be transformed into a permutation
 with the function
-\lstinline{PermList}. Examples:
+\lstinline{PermList}. Let us see some examples:
 \begin{lstlisting}
 gap> # The permutation (12) in two letters
 gap> ListPerm((1,2));                                                 
@@ -1217,13 +1445,18 @@ gap> PermList([1,2,3]);
 ()
 gap> PermList([2,1]);
 (1,2)
+gap> PermList([3,4]);
+fail
+gap> n := 9;;
+gap> PermList(Concatenation([2..n],[1]));
+(1,2,3,4,5,6,7,8,9)
 \end{lstlisting}
 
 \index{Permutation!sign of a}
-The \textbf{sign} of a permutation $\sigma$ is the number $(-1)^k$, where
+The sign of a permutation $\sigma$ is the number $(-1)^k$, where
 $\sigma=\tau_1\cdots\tau_k$ is some factorization of $\sigma$ as a product of
 transpositions. To compute the sign of a permutation one uses the function
-\lstinline{SignPerm}. Examples:
+\lstinline{SignPerm}:
 \begin{lstlisting}
 gap> SignPerm(());                                                    
 1
@@ -1236,7 +1469,6 @@ gap> SignPerm((1,2)(3,4,5));
 gap> SignPerm((1,2)(3,4));
 1
 \end{lstlisting}
-% sopore,puntosquesemueven,puntosfijos
 
 \begin{example}
 For a given $n$ we will construct the permutation $\sigma\in\Sym_n$ given by
@@ -1256,13 +1488,12 @@ gap> SignPerm(p);
 
 \index{Matrix!number of rows}
 \index{Matrix!number of columns}
-For us a matrix will be just a rectangular array of numbers.  The size of a
+A matrix is just a rectangular array of elements.  The size of a
 matrix can be obtained with \lstinline{DimensionsMat}.  Sometimes (for example
 if one has an integer matrix) the function \lstinline{Display} shows matrices
 in a nice way.  \lstinline{LaTeX} returns the \LaTeX~command\footnote{The
 function \lstinline{LaTeX} works for other \GAP~objects as well.} needed to
-write a matrix. 
-Examples:
+write a matrix:
 \begin{lstlisting}
 gap> m := [[1,2,3],[4,5,6]];;                                         
 gap> Display(m);
@@ -1281,12 +1512,10 @@ gap> DimensionsMat(m);
 [ 2, 3 ]
 \end{lstlisting}
 
-Let us play with row vectors:
-
 \index{Vectors!basic operations}
 \begin{example}
 Let $v=(1,2,3)$ and $w=(0,5,-7)$ be row vectors of $\Q^3$. 
-Let us check that $-5v=(-5,-10,-15)$ and $2v-w=(2,-1,13)$. We also check that the inner product between $v$ and $w$ is $v\cdot w=-11$. 
+Let us check that $-5v=(-5,-10,-15)$ and $2v-w=(2,-1,13)$. We also check that the inner product between $v$ and $w$ is $v\cdot w=-11$: 
 \begin{lstlisting}
 gap> v := [1,2,3];;
 gap> w := [0,5,-7];;
@@ -1303,7 +1532,28 @@ gap> v*w;
 \end{lstlisting}
 \end{example}
 
-We now perform some elementary calculations with matrices: 
+\begin{example}
+\index{Permutation matrices}
+    With \lstinline{PermutationMat} we can construct a permutation matrix 
+    $P_{\sigma}$ 
+    of a given dimension. The matrix  
+    $P_{\sigma}$ represents the permutation $\sigma$ acting on the right
+    by permuting the basis vectors. Here we have 
+    an illustrative example:
+\begin{lstlisting}
+gap> v := [5,6,7,8];;
+gap> p := PermutationMat((1,2,3), 4);;
+gap> Display(p);
+[ [  0,  1,  0,  0 ],
+  [  0,  0,  1,  0 ],
+  [  1,  0,  0,  0 ],
+  [  0,  0,  0,  1 ] ]
+gap> Permuted(v, (1,2,3));
+[ 7, 5, 6, 8 ]
+gap> v*p;
+[ 7, 5, 6, 8 ]    
+\end{lstlisting}  
+\end{example}
 
 \index{Matrix!basic operations}
 \begin{example}
@@ -1326,11 +1576,25 @@ C=\begin{pmatrix}
     0 & 2
 \end{pmatrix}.
 \]
-Let us compute $A^3$, $BC$, $CB$, $A+CB$ and $2A-5CB$: 
 \begin{lstlisting}
 gap> A := [[1,1,1],[0,1,1],[0,0,1]];;
 gap> B := [[1,4,7],[2,5,8]];;
 gap> C := [[1,2],[6,1],[0,2]];;
+\end{lstlisting}
+We note that the function \lstinline{Display} displays 
+matrices in a very nice way:
+\begin{lstlisting}
+gap> A;
+[ [ 1, 1, 1 ], [ 0, 1, 1 ], [ 0, 0, 1 ] ]
+gap> Print(A);
+[ [ 1, 1, 1 ], [ 0, 1, 1 ], [ 0, 0, 1 ] ]
+gap> Display(A);
+[ [  1,  1,  1 ],
+  [  0,  1,  1 ],
+  [  0,  0,  1 ] ]
+\end{lstlisting}
+Let us compute $A^3$, $BC$, $CB$, $A+CB$ and $2A-5CB$: 
+\begin{lstlisting}
 gap> Display(A^3);
 [ [  1,  3,  6 ],
   [  0,  1,  3 ],
@@ -1358,7 +1622,8 @@ gap> Display(2*A-5*C*B);
 \index{Matrix!diagonal}
 To construct a null matrix one uses the function \lstinline{NullMat}. The
 identity is constructed with the function \lstinline{IdentityMat}. To construct
-diagonal matrices one uses \lstinline{DiagonalMat}. Examples:
+diagonal matrices one uses \lstinline{DiagonalMat}. Let us see some
+examples:
 \begin{lstlisting}
 gap> Display(NullMat(2,3));
 [ [  0,  0,  0 ],
@@ -1373,9 +1638,10 @@ gap> Display(DiagonalMat([1,2]));
 \end{lstlisting}
 
 \index{Matrix!submatrices of a}
-We know that \lstinline{matrix[i][j]} returns the $(i,j)$-element of our matrix. 
+For a given matrix \lstinline{m}, we know that 
+\lstinline{m[i][j]} returns the $(i,j)$-element of our matrix. 
 To extract submatrices from a matrix one uses 
-\lstinline|matrix{rows}{columns}| such as the following example shows:
+\lstinline|m{rows}{columns}| such as the following example shows:
 \begin{lstlisting}
 gap> m := [\
 > [1, 2, 3, 4, 5],\
@@ -1383,8 +1649,6 @@ gap> m := [\
 > [3, 2, 1, 2, 4],\
 > [7, 5, 3, 0, 0],\
 > [0, 0, 0, 0, 1]];
-gap> m{[1..3]}{[1..3]};
-[ [ 1, 2, 3 ], [ 6, 7, 8 ], [ 3, 2, 1 ] ]
 gap> m{[2,4,5]}{[1,3]};
 [ [ 6, 8 ], [ 7, 3 ], [ 0, 0 ] ]
 \end{lstlisting}
@@ -1436,7 +1700,7 @@ gap> Display(TransposedMat(m)*m);
   [  -1,   2,   1 ] ]
 \end{lstlisting}	
 
-Creating random matrices is easy.  \lstinline{RandomMat} returns a random
+Creating random matrices is easy: \lstinline{RandomMat} returns a random
 rectangular matrix over a given ring, which defaults to $\Z$. With
 \lstinline{RandomInvertibleMat} (resp. with \lstinline{RandomUnimodularMat})
 one creates a random square matrix with integer entries invertible (resp. over
@@ -1456,7 +1720,7 @@ gap> Inverse(last);
 
 \begin{example}
   \index{Fibonacci sequence}
-An easy induction exercise shows that the Fibonacci sequence $(f_n)$ 
+An easy induction exercise shows the Fibonacci sequence $(f_n)$ 
 can be computed using 
 \[
     \begin{pmatrix}
@@ -1469,21 +1733,21 @@ can be computed using
 \]
 We use this trick to compute (very efficiently) Fibonacci numbers: 
 \begin{lstlisting}
-gap> fibonacci := function(n)
+gap> MyFibonacci := function(n)
 > local m;
 > m := [[0,1],[1,1]]^n;;
 > return m[1][2];
 > end;
 function( n ) ... end
-gap> fibonacci(10);
+gap> MyFibonacci(10);
 55
-gap> fibonacci(100000);
+gap> MyFibonacci(100000);
 <integer 259...875 (20899 digits)>
 \end{lstlisting}
 \end{example}
 
 One can easily compute the characteristic and minimal polynomial of a matrix
-with \lstinline{CharacteristicPolynomial} and \lstinline{Minimal Polynomial},
+with \lstinline{CharacteristicPolynomial} and \lstinline{MinimalPolynomial},
 respectively.
 
 Let $A$ be an $m\times n$ and let $b$ be an $1\times n$ matrix (say, a row
@@ -1524,14 +1788,25 @@ gap> Rank([[1, 2, 3],[4, 5, 6],[6, 7, 9]]);
 3
 \end{lstlisting}
 The function \lstinline{NullspaceMat} computes the vector space generated by
-the solutions of $xA=0$, where $x$ is a matriz of size $1\times m$ and $A$ is a
-matrix of size $m\times n$. 
+the solutions of $xA=0$, where $x$ is a matrix of size $1\times m$ and $A$ is a
+matrix of size $m\times n$.
+
+\begin{remark}
+It is very important to remember that~\GAP~always acts on the right. This means
+that vectors in general will be row vectors. This is crucial 
+to understand how functions such as  
+\lstinline{NullspaceMat}, \lstinline{Eigenvectors},  
+\lstinline{SolutionMat}
+work. 
+\end{remark}
+
+
 
 \section{Polynomials}
 
 One can define polynomial rings with \lstinline{PolynomialRing}. Indeterminates
 are defined with \lstinline{IndeterminatesOfPolynomialRing}. As an example, we
-define the polynomial $\Q[x]$ in one variable $x$ over the ring $\Q$s:
+define the polynomial $\Q[x]$ in one variable $x$ over the ring $\Q$:
 \begin{lstlisting}
 gap> A := PolynomialRing(Rationals,["x"]);;
 gap> x := IndeterminatesOfPolynomialRing(A)[1];
@@ -1582,7 +1857,7 @@ gap> LeadingCoefficient(f);
 
 
 \begin{example}
-	Let $f=21x^2+9$ and $g=20x^4+10x$ be polynomials in $\Z/30[x]$. Let us
+	Let $f=21x^2+9$ and $g=20x^4+10x$ be polynomials in $(\Z/30)[x]$. Let us
 	check that $fg=0$:
 \begin{lstlisting}
 gap> x := Indeterminate(Integers mod 30);;
@@ -1631,8 +1906,8 @@ gap> Factors(PolynomialRing(Field(E(3)),"x"),\
 	Let $f=x^2+5x+2$ and $g=x^4+1$. We check that $3f-2g$ is irreducible (over
 	the integers): 
 \begin{lstlisting}
-gap> x:=Indeterminate(Integers,"x");;
-gap> y:=Indeterminate(Integers,"y");;
+gap> x := Indeterminate(Integers,"x");;
+gap> y := Indeterminate(Integers,"y");;
 gap> f := x^2+5*x+2;;
 gap> g := x^4+1;;
 gap> 3*f-2*g;
@@ -1665,6 +1940,121 @@ gap> Filtered(last, j->not IsPrime(j));
 \end{lstlisting}
 \end{example}
 
+\section{Vector spaces}
+
+\GAP~can handle finite-dimensional vector spaces over different fields. For example, 
+we can play with the two-dimensional rational 
+vector space $\Q^2$:
+\begin{lstlisting}
+gap> V := Rationals^2;
+( Rationals^2 )
+gap> Basis(V);
+CanonicalBasis( ( Rationals^2 ) )
+gap> Elements(last);
+[ [ 0, 1 ], [ 1, 0 ] ]
+gap> Dimension(V);
+2
+\end{lstlisting}
+We can perform simple calculations with
+elements of the vector space:
+\begin{lstlisting}
+gap> [1,2,3] in V;
+false
+gap> v := [1,2];;
+gap> v in V;
+true
+gap> w := [5,-2];;
+gap> v-3*w;
+[ -14, 8 ]
+gap> last in V;
+true  
+\end{lstlisting}
+We now check for example
+that the set $\{(1,0),(2,0)\}$ is not a basis of $\Q^2$ while
+$B=\{(1,0),(2,1)\}$ is. Here is the code:
+\begin{lstlisting}
+gap> Basis(V, [[1,0],[2,0]]);
+fail
+gap> B := Basis(V, [[1,0],[2,1]]);
+Basis( ( Rationals^2 ), [ [ 1, 0 ], [ 2, 1 ] ] )
+gap> Elements(last);
+[ [ 1, 0 ], [ 2, 1 ] ]
+\end{lstlisting}
+Now we write a given vector, say 
+$(1,1)$, in the basis $B$: 
+\begin{lstlisting}
+gap> Coefficients(B, [2,1]);
+[ 0, 1 ]
+gap> Coefficients(B, [1,1]);
+[ -1, 1 ]
+\end{lstlisting}
+Conversely, 
+there is an easy way to write linear combinations
+of basis elements: 
+\begin{lstlisting}
+gap> LinearCombination(B, [5,3]);
+[ 11, 3 ]    
+\end{lstlisting}
+
+We can do several interesting things with
+finite-dimensional vector spaces. We can, for example, 
+compute the set of all $\Q$-linear maps
+$\Q^2\to\Q^2$. Here is the code:
+
+\begin{lstlisting}
+gap> hom := Hom(Rationals, V, V);;
+gap> Dimension(hom);
+4
+gap> f := Random(hom);
+<linear mapping by matrix, ( Rationals^2 ) -> ( Rationals^2 )>
+gap> Display(f);
+LeftModuleHomomorphismByMatrix( CanonicalBasis( ( Rationals\
+^2 ) ), [ [ 0, 0 ], [ -3/2, 0 ]
+ ], CanonicalBasis( ( Rationals^2 ) ) )
+gap> [1,0]^f;
+[ 0, 0 ]
+gap> [0,1]^f;
+[ -3/2, 0 ]
+\end{lstlisting}
+
+Now we play with the randomly chosen 
+linear map:
+\begin{lstlisting}
+gap> K := Kernel(f);;
+gap> Dimension(K);
+1
+gap> Elements(Basis(K));
+[ [ 1, 0 ] ]
+gap> V/K;
+( Rationals^1 )  
+gap> Range(f);
+( Rationals^2 )
+gap> Image(f);
+<vector space over Rationals, with 2 generators>
+gap> IsInjective(f);
+false
+gap> IsSurjective(f);
+false
+gap> Dimension(Range(f));
+2
+gap> Dimension(Image(f));
+1
+\end{lstlisting}
+
+Let us verify the dimension theorem
+for vector spaces:
+\begin{lstlisting}
+gap> S := Subspace(V, [[1,2]]);;
+gap> T := Subspace(V, [[5,-2]]);;
+gap> Dimension(S);
+1
+gap> Dimension(T);
+1
+gap> Dimension(Intersection(S,T));
+0
+gap> Dimension(S+T);
+2
+\end{lstlisting}
 
 \section{Problems}
 
@@ -1676,7 +2066,7 @@ gap> Filtered(last, j->not IsPrime(j));
 		\begin{cases}
 		x\equiv 3\bmod 10,\\
 		x\equiv 8\bmod 15,\\
-		x\equiv 5\bmod 84
+		x\equiv 5\bmod 84,
 	\end{cases}
 	\quad
 	\begin{cases}
@@ -1702,8 +2092,8 @@ gap> Filtered(last, j->not IsPrime(j));
 
 \begin{prob}
 	\label{prob:product}
-    Use \lstinline{Product} to compute $2\cdot 4\cdot 6\cdots
-    20$. 
+    Compute $2\cdot 4\cdot 6\cdots
+    200$. 
 \end{prob}
 
 \begin{prob}
@@ -1729,22 +2119,15 @@ gap> Filtered(last, j->not IsPrime(j));
 	\label{prob:binary}
 	Write a function that returns the binary expansion of an integer. Could you
 	do this for other bases?
-%FIXME
-%    Escriba funciones que convierta números decimales a binarios y binarios a
-%    decimales.
 \end{prob}
 
 \begin{prob}	\label{prob:minpoly}
 	Use \lstinline{MinimalPolynomial} to compute the minimal polynomial of
 	$3+\sqrt{5}$ over the rational numbers.
 \end{prob}
-%
-\begin{prob}\label{prob:fibo100}
-	Compute the first $100$ Fibonacci numbers.
-\end{prob}
 
 \begin{prob}\label{prob:fibok}
-	For $k\in\N$ let $a_n$ be given by $a_1=\cdots=a_{k+1}=1$ and
+	For a positive integer $k$ let $a_n$ be the sequence given by $a_1=\cdots=a_{k+1}=1$ and
 	$a_n=a_{n-k}+a_{n-k-1}$ for all $n>k+1$. Write a function depending on $k$
 	that constructs the sequence $a_{n}$.  For more information see 
 	\url{http://oeis.org/A103379}.
@@ -1757,12 +2140,6 @@ gap> Filtered(last, j->not IsPrime(j));
 	&a_n=\frac{a_{n-1}a_{n-3}+a_{n-2}^2}{a_{n-4}}
 	\end{align*}
 	for all $n\geq4$. For more information see \url{http://oeis.org/A006720}.
-\end{prob}
-
-\begin{prob}\label{prob:xwords}
-	Write a function that given a list \lstinline{lst} of words and a letter
-	\lstinline{x}, returns a sublist of \lstinline{lst} where every word starts
-	with \lstinline{x}. 
 \end{prob}
 
 \begin{prob}\label{prob:number-primes}
@@ -1818,7 +2195,7 @@ XX
 \begin{prob}
 	\label{prob:division}
 	Use the function \lstinline{QuotientRemainder} to compute the quotient and
-	the remainder of $f=2x^4+3x^3+2x+4$ and $g=3x^2+x+2$ in the ring $\Z_5[x]$. 
+	the remainder of $f=2x^4+3x^3+2x+4$ and $g=3x^2+x+2$ in the ring $(\Z/5)[x]$. 
 \end{prob}
 
 \begin{prob}
@@ -1828,12 +2205,12 @@ XX
 
 \begin{prob}
 	\label{prob:roots}
-	Prove that $x=2$ is the only root in $\Z_5$ of $x^{1000}+4x+1\in\Z_5[x]$.
+	Prove that $x=2$ is the only root in $\Z/5$ of $x^{1000}+4x+1\in(\Z/5)[x]$.
 \end{prob}
 
 \begin{prob}
 	\label{prob:factors}
-	Factorize $x^4-1$ in $\Z/5[x]$ and in $\Z/7[x]$.
+	Factorize $x^4-1$ in $(\Z/5)[x]$ and in $(\Z/7)[x]$.
 \end{prob}
 
 \begin{prob}
@@ -1864,10 +2241,10 @@ XX
 	Write an implementation of the FRACTRAN language. 
 
 	Starting with $n=2$, the program 
-	\begin{align*}
-		\frac{17}{65}, \frac{133}{34}, \frac{17}{19}, \frac{23}{17}, \frac{2233}{69},
-		\frac{23}{29}, \frac{31}{23}, \frac{74}{341}, \frac{31}{37}, \frac{41}{31}, \frac{129}{287}, \frac{41}{43}, \frac{13}{41}, \frac{1}{13}, \frac{1}{3}
-	\end{align*}
+    \begin{align*}
+                \frac{17}{91}, \frac{78}{85}, \frac{19}{51}, \frac{23}{38}, \frac{29}{33},
+                \frac{77}{29}, \frac{95}{23}, \frac{77}{19}, \frac{1}{17}, \frac{11}{13}, \frac{13}{11}, \frac{15}{2}, \frac{1}{7}, 55
+        \end{align*}
 	produces the sequence 
 	\[
 	2, 15, 825, 725, 1925, 2275, 425, 390, 330, 290, 770\dots
@@ -1894,16 +2271,6 @@ XX
 	first terms of the sequence.
 \end{prob}
 
-%\begin{prob}
-%	Let us play with finite-dimensional vector spaces. 
-% vectores
-%gap> v := [1,0,1];;
-%gap> w := [2,0,2];;
-%gap> v+3*w;
-%[ 7, 0, 7 ]
-%gap> v-w;
-%[ -1, 0, -1 ]
-
 \begin{prob}
     Write 
     \begin{align*}
@@ -1920,43 +2287,30 @@ XX
     Write the permutations 
     $(123)(45)(1625)(341)$ and 
     $(12)(245)(12)$
-    as product of disjoint cycles.
+    as a product of disjoint cycles.
 \end{prob}
 
 \begin{prob}
     Find a permutation $\tau$ such that 
-    \begin{enumerate}
+    \begin{enumerate}[label=(\alph*)]
         \item $\tau(12)(34)\tau^{-1}=(56)(13)$.
         \item $\tau(123)(78)\tau^{-1}=(257)(13)$.
         \item $\tau(12)(34)(567)\tau^{-1}=(18)(23)(456)$.
     \end{enumerate}
 \end{prob}
-%
-%%FIXME: perm como producto de trasposiciones
-%
+
 \begin{prob}
     Compute $\tau\sigma\tau^{-1}$ in the following cases:
-    \begin{enumerate}
+    \begin{enumerate}[label=(\alph*)]
         \item $\sigma=(123)$ and $\tau=(34)$.
         \item $\sigma=(567)$ and $\tau=(12)(34)$.
     \end{enumerate}
 \end{prob}
 
 \begin{prob}
-  Let $\sigma\in\Sym_{9}$ be given by $\sigma(i)=10-i$ for all
-  $i\in\{1,\dots,9\}$. Write $\sigma$ as a product of disjoint cycles.
-\end{prob}
-
-\begin{prob}
-    Find (if possible) three permutations $\alpha,\beta,\gamma\in\Sym_5$
-    such that $\alpha\beta=\beta\alpha$, $\beta\gamma=\gamma\beta$ and
-    $\alpha\gamma\ne\gamma\alpha$.
-\end{prob}
-
-\begin{prob}
-  Use the function \lstinline{PermutationMat} to write the elements of $\Sym_3$
-  as $3\times 3$ matrices. 
-%% List(SymmetricGroup(3), x->PermutationMat(x,3));
+  Let $\sigma\colon\{1,\dots,9\}\to\{1,\dots,9\}$,
+  $\sigma(i)=10-i$. Write the permutation 
+  $\sigma$ as a product of disjoint cycles.
 \end{prob}
 
 \begin{prob}
@@ -1972,7 +2326,7 @@ XX
 \end{prob}
 
 \begin{prob}
-    Write the funcion
+    Write the function
     \[
     (n,A)\mapsto I+A+\frac{1}{2!}A^2+\frac{1}{3!}A^3+\cdots+\frac{1}{n!}A^{n}.
     \]
@@ -1980,7 +2334,7 @@ XX
 
 \begin{prob}
   \index{Hilbert matrix}
-  For $n\in\N$ the Hilbert matrix $H_n$ is defined as 
+  For a positive integer $n$ the Hilbert matrix $H_n$ is defined as 
   \[
     (H_n)_{ij}=\frac{1}{i+j-1},\quad i,j\in\{1,\dots,n\}.
   \]
@@ -2012,14 +2366,27 @@ XX
 	\label{prob:vsQ}
 	Let $S$ be the vector space (over the rationals) generated by $(0,1,0)$ and
 	$(0,0,1)$ and $T$ be generated by $(1,2,0)$ and $(3,1,2)$. Use
-	\lstinline{VectorSpace} to create these vector spaces and compute $\dim S$,
-	$\dim T$, $\dim(S\cap T)$ and $\dim(S+T)$.
+	\lstinline{VectorSpace} to create these vector spaces and compute $\dim(S)$,
+	$\dim(T)$, $\dim(S\cap T)$ and $\dim(S+T)$.
 \end{prob}
 
 \begin{prob}
 	\label{prob:withE(4)}
 	Write the coordinates of the vector $(1,0,1)$ in the basis given by
 	$(2i,1,0)$, $(2,-i,1)$, $(0,1+i,1-i)$. 
+\end{prob}
+
+\begin{prob}
+    Use \lstinline{Subspaces} to count all possible subspaces
+    of the four-dimensional vector space
+    over the field $\F_3$. What about all subspaces of 
+    dimension two?
+\end{prob}
+
+\begin{prob}
+    Count the number of subspaces of $\F_3^4$ 
+    such that every element $(x_1,x_2,x_3,x_4)$ 
+    of the subspace is such that $x_1^2+x_2^2+x_3^2+x_4^2=0$. Hint: Use the function \lstinline{IsZero}. 
 \end{prob}
 
 \begin{prob}
@@ -2041,8 +2408,8 @@ XX
   \label{prob:eigenvalues}
   \index{Eigenvector}
   \index{Eigenvalue}
-  Use the functions \lstinline{Eigenvalues} and \lstinline{Eigenvalues} to
-  compute the eigenvalues and eigenvectors of the matrix
+  Use the functions \lstinline{Eigenvalues} and \lstinline{Eigenvectors} to
+  compute the eigenvalues and eigenvectors, respectively, of the matrix
   \[
     A=\begin{pmatrix}	
       1 & 2 & 3\\
@@ -2050,7 +2417,6 @@ XX
       6 & 7 & 8
     \end{pmatrix}\in\Q^{3\times3}.
   \]
-
   The function \lstinline{Eigenvectors} returns generators of the eigenspaces,
   where $v\ne0$ is an eigenvector of $A$ with eigenvalue $\lambda$ if and only
   if $vA=\lambda v$. 
@@ -2058,23 +2424,26 @@ XX
 
 \begin{prob}
   Use the function \lstinline{NullspaceMat} to compute the nullspace 
-  of the matrix $A$ from problem~\ref{prob:eigenvalues}. 
+  of the matrix $A$ from Problem~\ref{prob:eigenvalues}. 
   The nullspace of $A$ is defined as the set of vectors $v$ such
   that $vA=0$. 
 \end{prob}
 
-\begin{prob}\
-    \begin{enumerate}
-        \item Prove that $1+3i\nmid 4+i$.
+\begin{prob}
+    Let $i=\sqrt{-1}$.  
+    This exercise shows that one can do arithmetic in the
+    ring $\Z[i]$ of Gaussian integers. 
+    \begin{enumerate}[label=(\alph*)]
+        \item Prove that $1+3i\nmid 4+i$. 
         \item Apply the division algorithm to $\alpha=2+7i$ and $\beta=1+2i$.
         \item Compute $\gcd(7+17i,8-14i)$.
-        \item Is $2+3i$ prime in $\Z[i]$?
-        \item Is $2$ prime in $\Z[i]$?
-        \item Is $3$ prime in $\Z[i]$?
-        \item Factorize $8-14i$ and $-39+48i$ in $\Z[i]$.
+        \item Are $2+3i$, $2$ and $3$ prime elements in $\Z[i]$?
+        \item Factorize $8-14i$ and $-39+48i$.
         %\item Find all factorizations of 100 as a sum of squares.
     \end{enumerate}
 \end{prob}
 
-% otro ejercicio
-%\end{prob
+\begin{prob}
+    Let $a_0=a_1=1$ and $a_{n+1}=3a_n+4a_{n-1}$ for $n\geq1$. 
+    Compute $a_{100}$ and $a_{1000}$. 
+\end{prob}

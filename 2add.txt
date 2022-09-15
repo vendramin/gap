@@ -1,0 +1,45 @@
+
+Write a script that checks whether 
+set of matrices
+\[
+\left\{
+\begin{pmatrix}
+0 & 0\\
+0 & 0
+\end{pmatrix},
+\quad
+\begin{pmatrix}
+1 & 0\\
+0 & 1
+\end{pmatrix},
+\quad
+\begin{pmatrix}
+1 & 1\\
+1 & 0
+\end{pmatrix},
+\quad
+\begin{pmatrix}
+0 & 1\\
+1 & 1
+\end{pmatrix}
+\right\}\subseteq\GL_2(\F_2)
+\]
+is a field with the usual operations.  
+
+Let 
+\[
+A=\begin{pmatrix}
+1 & 1 & 0\\
+1 & 0 & 1\\
+1 & -1 & -1
+\end{pmatrix},
+\quad
+b=\begin{pmatrix}
+1\\
+-1\\
+1
+\end{pmatrix}
+\]
+Solve $AX=0$ and $AX=b$ over the ratianals and $\F_q$ for $q\in\{2,3,5,7\}$. 
+
+

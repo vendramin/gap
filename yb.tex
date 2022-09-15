@@ -1,0 +1,67 @@
+\chapter{The Yang--Baxter equation}
+
+En 1990, Drinfeld \cite{MR1183474} propuso estudiar la versión conjuntista de
+la ecuación de Yang--Baxter. El problema es el siguiente: dado un conjunto
+finito $X$, se quieren encontrar biyecciones $c\colon X\times X\to X\times X$
+tales que
+\[
+    (c\times\id)(\id\times c)(c\times\id)=(\id\times c)(c\times\id)(\id\times c).
+\]
+
+En \cite{MR1722951}, Etingof, Schedler y Soloviev estudiaron el problema en el
+caso en que $c$ es una involución (es decir $c^2=\id$). En ese trabajo y con
+ayuda de la computadora se construyeron todas las soluciones involutivas sobre
+conjuntos de cardinal $\leq 8$. En 2005, Rump \cite{MR2132760} introdujo una
+estructura no asociativa que permite describir soluciones involutivas de la
+ecuación de Yang--Baxter: \emph{cycle sets}. En esta sección daremos las
+nociones básicas y escribiremos funciones que nos permitan trabajar con estas
+estructuras.
+
+\subsection{Nociones básicas}
+
+\begin{block}
+	
+\end{block}
+
+\subsection{Cycle sets}
+
+\begin{block}
+Un \textbf{cycle set} es un conjunto $X$ junto con una operación
+$\cdot\colon X^2\to X$ que verifica $(x\cdot y)\cdot (x\cdot z)=(y\cdot
+x)\cdot (y\cdot z)$ para todo $x,y,z\in X$. La siguiente función 
+devuelve la sucesión de permutaciones que define un cycle set:
+\begin{lstlisting}
+gap> CS_Permutations := function(cycleset)
+> return List([1..Size(cycleset.matrix)], \
+> i->PermList(cycleset.matrix[i]));
+> end;
+function( cycleset ) ... end
+\end{lstlisting}
+\end{block}
+
+\begin{block}
+	Si $S\colon X^2\to X^2$ es una solución involutiva, escribimos
+	$S(x,y)=(f(x,y),y*x)$ para alguna $f\colon X\times X\to X$.  Como $S$ es
+	inversible, para cada $y\in X$ la función $x\mapsto y*x$ es inversible. Se
+	define entonces la operación $\cdot\colon X^2\to X$ por $x\cdot y=z$ si y
+	sólo si $x*z=y$, y luego $(X,\cdot)$ es un cycle set. En el código siguiente
+	escribimos una función que convierte soluciones involutivas de la ecuación
+	de trenzas en cycle sets:
+
+	\begin{lstlisting}
+solution2cycleset := function(solution)
+  local p,m;
+  m := [];
+  for p in solution.r_actions do
+    Add(m, ListPerm(Inverse(PermList(p)),solution.size));
+  od;
+  return rec(size := solution.size, matrix := m);
+end;
+	\end{lstlisting}
+
+	Recíprocamente, si $(X,\cdot)$ es un cycle set, entonces 
+	\[
+		S(x,y)=\left( (y*x)\cdot y,y*x \right),
+	\]
+	donde $x\cdot z=y$ si y sólo si $x*y=z$, es una solución involutiva. 
+\end{block}

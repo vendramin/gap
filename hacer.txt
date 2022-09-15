@@ -1,0 +1,64 @@
+Objetos geometricos y combinatorios (?)
+
+* Complejos simpliciales (paquete HAP)
+* Grafos (usar Grape?)
+* Posets (nuestro paquete)
+* Espacios vectoriales
+
+Cosas basicas:
+ - Definir un grafo
+ - Calcularle cosas como matriz de adyacencia, conectividiad, grado de los vertices, chequear si es regular.
+ - Digrafos, matchings?
+
+ - Definir un complejo simplicial
+ - Calcularle homologia y grupo fundamental
+ - Relacionarlo con presentaciones de grupo
+ - Conjetura de Andrews-Curtis?
+ - Hay estructuras mas generales (CW regulares), pero no meterse con eso (solo las nombraria)
+ 
+ - Definir un poset
+ - Calcularle su complejo de orden, y reciprocamente a un complejo simpicial calcularle su face poset
+ - Homologia y pi1 como CS
+ - Graficar el poset
+ - Diferentes formas de construir posets
+ - Posets de subgrupos, de subespacios
+ - Caracteristica de Euler de posets, complejos simpliciales
+ - Grado, altura, dimension
+ - Partition lattice
+ - Lattice de subespacios
+ 
+Ejercicio:
+ - Construir un modelo de S^1 y calcularle la homologia en Z
+ - Construir un modelo de P^2 y calcularle el grupo fundamental
+ - Construir el producto directo de estos dos posets y chequear el teorema de Kunneth en homologia con coeficientes en Z
+
+Complejos de cadena con HAP (?)
+ - coeficientes
+ - operaciones basicas
+ - homologia
+ - parte prima de la homologia (util para CS grandes por ejemplo)
+
+Cuerpos y espacios vectoriales (quizas esto cerca de grupos)
+
+ - Cuerpos: Q, R, C, GF(q). Representacion de elementos complejos (recordar que en realidad no hay numeros trascendentes, o sea R no esta definido)
+ - Construir espacios vectoriales: GF(q)^n por ejemplo
+ - Conjuntos de generadores
+ - Cocientes, subespacios, subespacios por dimension
+ - Transformaciones lineales (esta implementado?): kernel, imagen
+ - Formas: usar las que vienen en GAP (nunca las vi pero estan), o bien jugar y definir algunas.
+ - Ejercicios: subespacios ortogonales, no degenerados, posets de subespacios, etc. Verificar que el poset de subespacios es esferico para n = 3,4 y GF(q), q=2,3.
+ - Construir proyeccion ortogonal de un subespacio
+ - Calcular radical de una forma
+
+
+Cohomologia de grupos
+ - Definiciones basicas
+ - Calculo de algunas cohomologias segun HAP
+(Nunca lo hice pero estaría bueno incluir algo)
+ - Relación con algunas propiedades del grupo: por ejemplo H^1 = Abelianizado
+ - Verificar la Hopf's integral homology formula para ciertos grupos G (ver https://en.wikipedia.org/wiki/Group_cohomology)
+
+
+------------------------------------
+
+- No me queda clara la parte de proyectos que deberiamos hacer ahi: proyectos en progreso? Cosas para hacer en GAP? 

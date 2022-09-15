@@ -1,0 +1,190 @@
+
+%
+
+\begin{example}
+Let $A=\{2,\dots,100\}$ and let $\sim$ be the binary
+relation given by $n\sim m$ if and only if $\gcd(n,m)=1$.
+We construct the binary relation
+and then check whether the relation is
+reflexive, (anti)symmetric and transitive.
+
+\begin{lstlisting}
+gap> A := [2..100];;
+gap> l := [];;
+gap> for x in A do
+> for y in A do
+> if Gcd(x,y)>1 then
+> Add(l, Tuple([x,y]));
+> fi;
+> od;
+> od;
+gap> rel := BinaryRelationByElements(Domain(A), l);;
+gap> IsReflexiveBinaryRelation(rel);
+true
+gap> IsSymmetricBinaryRelation(rel);
+true
+gap> IsAntisymmetricBinaryRelation(rel);
+false
+gap> 1IsTransitiveBinaryRelation(rel);
+false
+\end{lstlisting}
+
+To finish, we want to compute the number
+of elements that are related to $12$.
+
+\begin{lstlisting}
+gap> Number(A, x->Gcd(x,12)>1);
+67
+\end{lstlisting}
+
+Can you compute the number of elements
+related to 12 in the case
+where $A=\{2,\dots,100000\}$?
+\end{example}
+
+\begin{example}
+For $g$ a polynomial such that $g(0)\ne 0$
+consider the sequence of polynomials
+given by $f_1=Xg$ and
+$f_{n+1}=(Xf'_n)^n$. Compute the multiplicity
+of $0$ as a root of $f_n$.
+
+Let us fix $g=1$ and construct the sequence up to
+some bound, say only five terms.
+\begin{lstlisting}
+gap> N := 5;;
+gap> x := Indeterminate(Rationals, "x");;
+gap> g := 1;;
+gap> f := [x*g];;
+gap> for n in [2..N] do
+> Add(f, (x*Derivative(f[n-1], x))^(n-1));
+> od;
+gap> f;
+[ x, x, x^2, 8*x^6, 5308416*x^24 ]
+\end{lstlisting}
+
+One can make experiments and use different values of $g$. It is an exercise to
+the reader to prove that the multiplicity of zero in $f_n$ is $n!$,
+independently of $g$.
+\end{example}
+
+\section{Promislow's group}
+
+
+\begin{definition}
+A group $G$ has the \emph{unique product property} if 
+for all finite non-empty subsets $A$ and $B$ of $G$ 
+there exists $x\in G$ that can be written uniquely as
+$x = ab$ with $a\in A$ and $b\in B$.
+\end{definition}
+
+Groups with the unique product property satisfy 
+Kaplansky's unit conjecture. Moreover, 
+left-ordered groups satisfy 
+the unique product property. However, the converse
+does not hold. Promislow provided the first counterexample.
+
+\begin{example}
+    The group $G=\langle a,b:a^{-1}b^2a=b^{-2},b^{-1}a^2b=a^{-2}\rangle$
+    does not have the unique product property. 
+    It is known that $G$ is torsion-free, see... 
+    Let 
+    \begin{multline}
+    \label{eq:Promislow}
+    S=\{ a^2b,
+    b^2a,
+    aba^{-1},
+    (b^2a)^{-1},
+    (ab)^{-2},
+    b,
+    (ab)^2x,
+    (ab)^2,
+    (aba)^{-1},\\
+    bab,
+    b^{-1},
+    a,
+    aba,
+    a^{-1}
+    \}.
+    \end{multline}
+    We use \textsf{GAP} and the representation $G\to\GL(4,\Q)$ given by 
+    \[
+a\mapsto\begin{pmatrix}
+1 & 0 & 0 & 1/2\\
+0 & -1 & 0 & 1/2\\
+0 & 0 & -1 & 0\\
+0 & 0 & 0 & 1
+\end{pmatrix},
+\quad
+b\mapsto\begin{pmatrix}
+-1 & 0 & 0 & 0\\
+0 & 1 & 0 & 1/2\\
+0 & 0 & -1 & 1/2\\
+0 & 0 & 0 & 1
+\end{pmatrix}
+\]
+    to check that 
+    $G$ does not have
+    unique product property, as each 
+    \[
+    s\in S^2=\{s_1s_2:s_1,s_2\in S\}
+    \]
+    admits at least two different decompositions of the 
+    form $s=xy=uv$ for $x,y,u,v\in S$. 
+    We first create the matrix representations of $a$ and $b$.
+\begin{lstlisting}
+gap> a := [[1,0,0,1/2],[0,-1,0,1/2],[0,0,-1,0],[0,0,0,1]];;
+gap> b := [[-1,0,0,0],[0,1,0,1/2],[0,0,-1,1/2],[0,0,0,1]];;
+\end{lstlisting}
+    Now we create
+    a function that produces the set $S$.
+\begin{lstlisting}
+gap> Promislow := function(x, y)
+> return Set([
+> x^2*y,
+> y^2*x,
+  x*y*Inverse(x),
+  (y^2*x)^(-1),
+  (x*y)^(-2),
+  y,
+  (x*y)^2*x,
+  (x*y)^2,
+  (x*y*x)^(-1),
+  y*x*y,
+  y^(-1),
+  x,
+  x*y*x,
+  x^(-1)
+]);
+end;;
+\end{lstlisting}
+So the set $S$ of \eqref{eq:Promislow} 
+will be \lstinline{Promislow(a,b)}. We now
+create a function that checks whether
+every element of a Promislow subset 
+admits more than one representation.
+\begin{lstlisting}
+gap> is_UPP := function(S)
+> local l,x,y;
+> l := [];
+> for x in S do
+> for y in S do
+> Add(l,x*y);
+> od;
+> od;
+> if ForAll(Collected(l), x->x[2] <> 1) then
+> return false;
+> else
+> return fail;
+> fi;
+> end;;
+\end{lstlisting}
+Finally, we check whether every element of 
+$S$ admits more than one representation.
+\begin{lstlisting}
+gap> S := Promislow(a,b);;
+gap> is_UPP(S);
+false
+\end{lstlisting}
+This completes the proof. 
+\end{example}

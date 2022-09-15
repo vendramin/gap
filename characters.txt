@@ -1,0 +1,25 @@
+En 1964 Dade demostró que tabla de caracteres + powermaps no determinan el
+grupo. Era una pregunta de Brauer. Hagamos un ejemplo con GAP:
+El artículo es: http://www.sciencedirect.com/science/article/pii/002186936490002X
+¿Cuál es el menor orden que pueden tener estos grupos? (Se conocen como par de
+Brauer.)
+
+* McKay
+* Problema de Navarro (ver notas) * publicable
+* Contraejemplo de Dade, ver Lux...
+
+---
+Para evaluar:
+gap> G:=DihedralGroup(30);
+<pc group of size 30 with 3 generators>
+gap> phi:=Irr(G)[2];
+Character( CharacterTable( <pc group of size 30 with 3 generators> ), 
+[ 1, -1, 1, 1, 1, 1, 1, 1, 1 ] )
+gap> g:=Random(G);
+f2*f3^2
+gap> g^phi;
+1
+gap> g:=Random(G);
+f1*f2*f3
+gap> g^phi;
+-1

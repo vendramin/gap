@@ -1,0 +1,593 @@
+\chapter{Quandles}
+
+\section{Definitions}
+
+%Para las nociones básicas sobre quandles referimos a
+%\cite{MR1994219}.
+
+% TODO
+% ejercicio: rack, ejemplo: rack de permutaciones
+% ejercicio: racks a quandles, quadles a racks
+
+% PLAN
+% quandles:
+% * agregar la clasificación de quandles indescomponibles
+% * armar un paquete al final del capítulo 
+% yb
+% * soluciones ESS <-> cycle sets
+
+
+\begin{block}
+	A \textbf{quandle} is a pair $(X,\triangleright)$, where $X$ is a non-empty
+	set and $\triangleright\colon X\times X\to X$ is a map, denoted by
+	$(x,y)\mapsto x\triangleright y$, such that 
+    \begin{enumerate}
+        \item for each $x\in X$ the map $\varphi_x\colon X\to X$, 
+            $\varphi_x(y)=x\triangleright y$, is bijective, 
+        \item  $x\triangleright (y\triangleright z)=(x\triangleright
+            y)\triangleright (x\triangleright z)$ for all $x,y,z\in X$,
+        \item $x\triangleright x=x$ for all $x\in X$.
+    \end{enumerate}
+\end{block}
+
+\begin{block}
+	Suppose that $X$ is a finite quandle. Without loss of generality we may
+	assume that $X=\{1,2,\dots,n\}$. Then a quandle structure over $X$ is a
+	sequence of permutations $\varphi_1,\dots,\varphi_n$ of $\Sym_n$ such that 
+    \begin{enumerate}
+        \item $\varphi_x(x)=x$ for all $x\in X$.
+        \item $\varphi_x\varphi_y\varphi_x^{-1}=\varphi_{\varphi_x(y)}$ for all $x,y\in X$.
+    \end{enumerate}
+	Similarly, a quandle structure over $X=\{1,\dots,n\}$ can be given by a
+	matrix $Q\in\Z^{n\times n}$, where $Q_{ij}=i\triangleright j$ for all
+	$i,j\in X$. The matrix $Q$ is called the \textbf{quandle matrix} of $X$.
+\end{block}
+
+\begin{block}
+	Si $X$ e $Y$ son quandles, una biyección $f\colon X\to Y$ es un
+	\textbf{isomorfismo de quandles} si $f(x\triangleright
+	y)=f(x)\triangleright f(y)$ para todo $x,y\in X$. La siguiente función
+	verifica (de forma no muy eficiente) si dos quandles son isomorfos por una
+	permutación dada:
+\begin{lstlisting}
+gap> IsQuandleIsomorphism := \
+> function(p, quandle1, quandle2)
+> local n;
+> if Size(quandle1) <> Size(quandle2) then
+>   return false;
+> else
+>   n := Size(quandle1);
+> fi;
+> return ForAll(Cartesian([1..n], [1..n]),\
+> x->quandle1[x[1]][x[2]]^p=quandle2[x[1]^p][x[2]^p]);
+> end;
+function( p, quandle1, quandle2 ) ... end
+\end{lstlisting}
+\end{block}
+
+\begin{example}
+Veamos que los quandles $(123)^{\Alt_4}$ y $(132)^{\Alt_4}$ son
+isomorfos: 
+\begin{lstlisting}
+gap> A4 := AlternatingGroup(4);;
+gap> S4 := SymmetricGroup(4);;
+gap> First(S4, p->IsQuandleIsomorphism(p, \
+> ConjugationQuandle(A4, (1,2,3)),\
+> ConjugationQuandle(A4, (1,3,2))));
+(1,4)
+\end{lstlisting}
+\end{example}
+
+\begin{block}
+Con lo hecho en el ejemplo anterior es fácil escribir una función que determine
+si dos quandles son isomorfos:
+\begin{lstlisting}
+gap> IsomorphismQuandles :=\
+> function(quandle1, quandle2)
+> local n;
+> if Size(quandle1) <> Size(quandle2) then
+> return fail;
+> else
+> n := Size(quandle1);
+> fi;
+> return First(SymmetricGroup(n), \
+> p->IsQuandleIsomorphism(p, quandle1, quandle2));
+> end;
+function( quandle1, quandle2 ) ... end
+\end{lstlisting}
+\end{block}
+
+\begin{block}
+Vimos que un quandle finito de tamaño $n$ puede presentarse como la sucesión de
+permutaciones $\varphi_1,\dots,\varphi_n$ o como una matriz de $n\times n$
+cuyas filas son las imágenes de las permutaciones. La siguiente función devuelve
+la matriz de un quandle dado por una sucesión de permutaciones:
+\begin{lstlisting}
+gap> Quandle := function(perms)
+> return List(perms, x->ListPerm(x));
+> end;
+function( perms ) ... end
+\end{lstlisting}
+La siguiente, en cambio, devuelve la sucesión de permutaciones que define un
+quandle:
+\begin{lstlisting}
+gap> Permutations := function(quandle)
+> return List(quandle, PermList);
+> end;
+function( quandle ) ... end
+\end{lstlisting}
+\end{block}
+
+\section{Examples}
+
+\begin{block}
+\index{Quandle!trivial} Sea $X$ un conjunto no vacío. Entonces $X$ es un
+quandle con $x\triangleright y=y$ para todo $x,y\in X$. Este quandle se
+denomina \textbf{quandle trivial} sobre $X$. Vamos a construir la matriz 
+del quandle trivial sobre el conjunto $\{1,\dots,n\}$: 
+\begin{lstlisting}
+gap> TrivialQuandle := function(n)
+> return List([1..n], x->[1..n]);
+> end;
+function( n ) ... end
+gap> Display(TrivialQuandle(2));
+[ [  1,  2 ],
+  [  1,  2 ] ]
+gap> Display(TrivialQuandle(3));
+[ [  1,  2,  3 ],
+  [  1,  2,  3 ],
+  [  1,  2,  3 ] ]
+gap> Display(TrivialQuandle(4));
+[ [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ] ]
+\end{lstlisting}
+\end{block}
+
+
+\begin{block}
+Let $G$ be a finite group. Then $G$ is a quandle with $x\triangleright
+y=xy^{-1}x$ for all $x,y\in G$.  This quandle is called the \textbf{core
+quandle} of $G$.  The following function constructs the core quandle of a
+finite group:
+\begin{lstlisting}
+gap> CoreQuandle := function(group)
+> local m, l, x, y, i, j;
+> l := Elements(group);
+> m := NullMat(Size(l), Size(l));
+> for x in group do
+>   for y in group do
+>     i := Position(l, x);
+>     j := Position(l, y);
+>     m[i][j] := Position(l, x*Inverse(y)*x);
+>   od;
+> od;
+> return m;
+> end;
+function( group ) ... end
+\end{lstlisting}
+Veamos algunos ejemplos:
+\begin{lstlisting}
+gap> Display(CoreQuandle(SymmetricGroup(3)));
+[ [  1,  2,  3,  5,  4,  6 ],
+  [  1,  2,  6,  4,  5,  3 ],
+  [  1,  6,  3,  4,  5,  2 ],
+  [  5,  2,  3,  4,  1,  6 ],
+  [  4,  2,  3,  1,  5,  6 ],
+  [  1,  3,  2,  4,  5,  6 ] ]
+gap> Display(CoreQuandle(CyclicGroup(3)));
+[ [  1,  3,  2 ],
+  [  3,  2,  1 ],
+  [  2,  1,  3 ] ]
+gap> Display(CoreQuandle(CyclicGroup(4)));
+[ [  1,  4,  3,  2 ],
+  [  3,  2,  1,  4 ],
+  [  1,  4,  3,  2 ],
+  [  3,  2,  1,  4 ] ]
+gap> Display(CoreQuandle(CyclicGroup(5)));
+[ [  1,  5,  4,  3,  2 ],
+  [  3,  2,  1,  5,  4 ],
+  [  5,  4,  3,  2,  1 ],
+  [  2,  1,  5,  4,  3 ],
+  [  4,  3,  2,  1,  5 ] ]
+\end{lstlisting}
+\end{block}
+
+\begin{remark}
+	No todo quandle es un quandle de conjugación, ver
+	ejercicio~\ref{xca:conjugacion}.  
+\end{remark}
+
+\begin{example}
+\index{Quandle!diedral}
+Sea $n\in\N$. El anillo $\Z_n$ es un quandle con la acción dada por
+$x\triangleright y=2x-y$ para todo $x,y\in\Z_n$. Este quandle se denomina
+\textbf{quandle diedral} y se denota por $\D_n$. Para construir quandles
+diedrales utilizamos la función \lstinline{ZmodnZ}:
+\begin{lstlisting}
+gap> DihedralQuandle := function(n)
+> local m, x, y, i, j, l;
+> l := Elements(ZmodnZ(n));
+> m := NullMat(Size(l), Size(l));
+> for x in l do
+>   for y in l do
+>     i := Position(l, x);
+>     j := Position(l, y);
+>     m[i][j] := Position(l, 2*x-y);
+>   od;
+> od;
+> return m;
+> end;
+function( n ) ... end
+\end{lstlisting}
+Veamos algunos ejemplos:
+\begin{lstlisting}
+gap> Display(DihedralQuandle(3));
+[ [  1,  3,  2 ],
+  [  3,  2,  1 ],
+  [  2,  1,  3 ] ]
+gap> Display(DihedralQuandle(4));
+[ [  1,  4,  3,  2 ],
+  [  3,  2,  1,  4 ],
+  [  1,  4,  3,  2 ],
+  [  3,  2,  1,  4 ] ]
+gap> Display(DihedralQuandle(5));
+[ [  1,  4,  5,  2,  3 ],
+  [  3,  2,  1,  5,  4 ],
+  [  4,  5,  3,  1,  2 ],
+  [  5,  3,  2,  4,  1 ],
+  [  2,  1,  4,  3,  5 ] ]
+\end{lstlisting}
+\end{example}
+
+\begin{example}
+\index{Quandle!de Alexander}
+Sea $\F_q$ el cuerpo de $q$ elementos, donde $q$ es una potencia de un número
+primo. Para cada $\alpha\in\F_q\setminus\{0\}$ definimos el \textbf{quandle de
+Alexander} de tipo $(q,\alpha)$ como el quandle sobre el cuerpo $\F_q$ dado por
+$x\triangleright y=(1-\alpha)x+\alpha y$ para todo $x,y\in\F_q$.
+\begin{lstlisting}
+gap> AlexanderQuandle := function(field, alpha)
+> local m, x, y, i, j, l;
+> l := Elements(field);
+> m := NullMat(Size(l), Size(l));
+> for x in l do
+>   for y in l do
+>     i := Position(l, x);
+>     j := Position(l, y);
+>     m[i][j] := Position(l, (1-alpha)*x+alpha*y);
+>   od;
+> od;
+> return m;
+> end;
+\end{lstlisting}
+Veamos algunos ejemplos:
+\begin{lstlisting}
+gap> Display(AlexanderQuandle(GF(3),Z(3)));
+[ [  1,  3,  2 ],
+  [  3,  2,  1 ],
+  [  2,  1,  3 ] ]
+gap> Display(AlexanderQuandle(GF(4),Z(4)));
+[ [  1,  3,  4,  2 ],
+  [  4,  2,  1,  3 ],
+  [  2,  4,  3,  1 ],
+  [  3,  1,  2,  4 ] ]
+gap> Display(AlexanderQuandle(GF(4),Z(4)^2));
+[ [  1,  4,  2,  3 ],
+  [  3,  2,  4,  1 ],
+  [  4,  1,  3,  2 ],
+  [  2,  3,  1,  4 ] ]
+gap> Display(AlexanderQuandle(GF(4),Z(4)^3));
+[ [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ],
+  [  1,  2,  3,  4 ] ]
+gap> Display(AlexanderQuandle(GF(5),Z(5)));
+[ [  1,  3,  4,  5,  2 ],
+  [  4,  2,  5,  3,  1 ],
+  [  5,  1,  3,  2,  4 ],
+  [  2,  5,  1,  4,  3 ],
+  [  3,  4,  2,  1,  5 ] ]
+\end{lstlisting}
+\end{example}
+
+\begin{block}
+\index{Quandle!de conjugación}
+Sea $G$ un grupo y $g^G$ una clase de conjugación de $G$. Entonces $g^G$ es un
+quandle con $x\triangleright y=xyx^{-1}$ para todo $x,y\in g^G$.  El quandle
+asociado a la clase de conjugación de $g$ en $G$ se llama \textbf{quandle de
+conjugación}. Primero escribimos la función que nos devuelve la matriz de un
+quandle de conjugación:
+\begin{lstlisting}
+gap> ConjugationQuandle := function(group, g)
+> local m, c, x, y, i, j;
+> if g in group then
+>   c := Elements(ConjugacyClass(group, g));
+>   m := NullMat(Size(c), Size(c));
+>   for x in c do
+>     for y in c do
+>       i := Position(c, x);
+>       j := Position(c, y);
+>       m[i][j] := Position(c, x*y*Inverse(x));
+>     od;
+>   od;
+>   return m;
+> else
+>   return fail;
+> fi;
+> end;
+function( group, g ) ... end
+\end{lstlisting}
+Hagamos algunos ejemplos:
+\begin{lstlisting}
+gap> Display(ConjugationQuandle(\ 
+> AlternatingGroup(4),(1,2,3)));
+[ [  1,  3,  4,  2 ],
+  [  4,  2,  1,  3 ],
+  [  2,  4,  3,  1 ],
+  [  3,  1,  2,  4 ] ]
+gap> Display(ConjugationQuandle(\
+> SymmetricGroup(3),(1,2)));
+[ [  1,  3,  2 ],
+  [  3,  2,  1 ],
+  [  2,  1,  3 ] ]
+\end{lstlisting}
+\end{block}
+
+
+
+\section{The inner group}
+
+\begin{block} 
+\label{block:InnerGroup}
+Si $X$ es un quandle se define el \textbf{grupo interior} de $X$ como el grupo
+generado por las permutaciones $\varphi_x$, es decir: $\Inn(X)=\langle
+\varphi_x:x\in X\rangle$. El grupo $\Inn(X)$ actúa naturalmente (por
+evaluación) en $X$. El quandle $X$ se dice \textbf{conexo} si $\Inn(X)$ actúa
+transitivamente en $X$. Para calcular el grupo interior de un quandle finito se
+tiene la siguiente función:
+\begin{lstlisting}
+gap> InnerGroup := function(quandle)
+> return Group(Permutations(quandle));
+> end;
+function( quandle ) ... end
+\end{lstlisting}
+Para determinar si un quandle es conexo tenemos la siguiente función:
+\begin{lstlisting}
+gap> IsConnected := function(quandle)
+> return IsTransitive(InnerGroup(quandle),\
+> [1..Size(quandle)]);
+> end;
+function( quandle ) ... end
+\end{lstlisting}
+\end{block}
+
+\begin{examples}
+Veamos cómo utilizar las funciones escritas
+en~\ref{block:InnerGroup}.  
+
+\begin{table}[H]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		quandle & grupo interior & comentarios\tabularnewline
+		\hline 
+		$\D_{3}$ & $\Sym_{3}$ & conexo\tabularnewline
+		$\D_{4}$ & $C_2\times C_2$ & disconexo\tabularnewline
+		$\D_{5}$ & $\D_{10}$ & conexo\tabularnewline
+		$(123)^{A_{4}}$ & $\Alt_{4}$ & conexo\tabularnewline
+		\hline 
+	\end{tabular}
+    \caption{Algunos grupos interiores de quandles.}
+    \label{tab:interiores}
+\end{table}
+\noindent El código para obtener el cuadro~\ref{tab:interiores} es
+el siguiente:
+\begin{lstlisting}
+gap> D3 := DihedralQuandle(3);;
+gap> IsConnected(D3);
+true
+gap> StructureDescription(InnerGroup(D3));
+"S3"
+gap> D4 := DihedralQuandle(4);;
+gap> IsConnected(D4);
+false
+gap> StructureDescription(InnerGroup(D4));
+"C2 x C2"
+gap> D5 := DihedralQuandle(5);;
+gap> IsConnected(D5);
+true
+gap> StructureDescription(InnerGroup(D5));
+"D10"
+gap> T := ConjugationQuandle(\
+> AlternatingGroup(4), (1,2,3));;
+gap> IsConnected(T);
+true
+gap> StructureDescription(InnerGroup(T));
+"A4"
+\end{lstlisting}
+\end{examples}
+
+\section{The enveloping group}
+
+\begin{block}
+Si $X$ es un quandle se define el \textbf{grupo envolvente} $G_X$ de $X$ como
+el grupo con generadores $x\in X$ y relaciones $xy=(x\triangleright y)x$ para
+todo $x,y\in X$. En la siguiente función utilizamos \lstinline{FreeGroup} y
+\lstinline{GeneratorsOfGroup} para construir el grupo envolvente de un quandle
+finito:
+\begin{lstlisting}
+gap> EnvelopingGroup := function(quandle)
+> local rels, gens, f, x, y;
+> f := FreeGroup(Size(quandle));
+> rels := [];
+> gens := GeneratorsOfGroup(f);
+> for x in [1..Size(quandle)] do
+>   for y in [1..Size(quandle)] do
+>     if x <> y then
+>       Add(rels,\
+>       gens[x]*gens[y]*\
+>       Inverse(gens[quandle[x][y]]*gens[x]));
+>     fi;
+>   od;
+> od;
+> return f/rels;
+> end;
+function( quandle ) ... end
+\end{lstlisting}
+Veamos algunos ejemplos:
+\begin{lstlisting}
+gap> EnvelopingGroup(DihedralQuandle(3));
+<fp group on the generators [ f1, f2, f3 ]>
+gap> RelatorsOfFpGroup(last);
+[ f1*f2*f1^-1*f3^-1, f1*f3*f1^-1*f2^-1, 
+  f2*f1*f2^-1*f3^-1, f2*f3*f2^-1*f1^-1, 
+  f3*f1*f3^-1*f2^-1, f3*f2*f3^-1*f1^-1 ]
+gap> EnvelopingGroup(DihedralQuandle(4));
+<fp group on the generators 
+[ f1, f2, f3, f4 ]>
+gap> RelatorsOfFpGroup(last);
+[ f1*f2*f1^-1*f4^-1, f1*f3*f1^-1*f3^-1, 
+  f1*f4*f1^-1*f2^-1, f2*f1*f2^-1*f3^-1, 
+  f2*f3*f2^-1*f1^-1, f2*f4*f2^-1*f4^-1, 
+  f3*f1*f3^-1*f1^-1, f3*f2*f3^-1*f4^-1, 
+  f3*f4*f3^-1*f2^-1, f4*f1*f4^-1*f3^-1, 
+  f4*f2*f4^-1*f2^-1, f4*f3*f4^-1*f1^-1 ]
+\end{lstlisting}
+\end{block}
+
+\begin{block}
+En \cite[Lemma 1.9]{MR1994219} se demuestra que si $X$ es un quandle de
+conjugación, entonces $\Inn X\simeq G_X/Z(G_X)$. Veamos un ejemplo:
+\begin{lstlisting}
+gap> D3 := DihedralQuandle(3);;
+gap> G := EnvelopingGroup(D3);;
+gap> IsomorphismGroups(G/Center(G),InnerGroup(D3));
+[ (1,2)(3,6)(4,5), (1,3)(2,5)(4,6), 
+  (1,4)(2,6)(3,5) ] -> [ (2,3), (1,2), (1,3) ]
+\end{lstlisting}
+\end{block}
+
+%%% Finite quotient
+
+\section{Homology}
+\section{Applications to knot theory}
+\section{Exercises and problems}
+
+\subsection{Quandles}
+
+\begin{block}
+	A \textbf{rack} is a set $X$ with an operation $\triangleright\colon
+	X\times X\to X$, denoted by $(x,y)\mapsto x\triangleright y$, such that 
+	\ldots
+\end{block}
+
+\begin{block}
+	Escriba una función que determine si una matriz de $n\times n$ y con
+	valores en $\{1,\dots,n\}$ es la matriz de un quandle. 
+\end{block}
+
+\begin{block}
+	Escriba una función que determine si una sucesión de $n$ permutaciones
+	define un quandle de tamaño $n$.
+\end{block}
+
+\begin{block}
+	Utilice la función \lstinline{CyclicGroup} y escriba una función que
+	devuelva la matriz de un quandle diedral finito.
+\end{block}
+
+\begin{block}
+	Escriba una función que devuelva la matriz del quandle de conjugación
+	asociado a una unión finita de clases de conjugación finitas de un grupo
+	dado. 
+\end{block}
+
+\begin{block}
+	Determine para qué valores de $\alpha\in\F_5\setminus\{0\}$ el quandle de
+	Alexander de tipo $(5,\alpha)$ es conexo.
+\end{block}
+
+\begin{block}
+	Un quandle $X$ se dice \textbf{fiel} si la función $X\to\Inn(X)$,
+	$x\mapsto\varphi_x$, es inyectiva. Escriba una función que determine si un
+	quandle es fiel.
+\end{block}
+
+\begin{block}
+	Si $X$ es un quandle se define el \textbf{grupo de automorfismos} de $X$
+	como el grupo 
+	\[
+	\Aut(X)=\{f\in\Sym_X:f(x\triangleright y)=f(x)\triangleright f(y)\text{ para todo $x,y\in X$}\},
+	\]
+	donde $\Sym_X$ denota el conjunto de biyecciones $X\to X$. Escriba una
+	función que calcule el grupo de automorfismos de un quandle.
+\end{block}
+
+\begin{block}
+	¿Es cierto que para todo quandle $X$ se tiene que $\Inn(X)=\Aut(X)$?
+\end{block}
+
+\begin{block}
+	Determine si el quandle $(123)^{\Alt_4}$ es isomorfo a algún quandle afín
+	sobre $\F_4$. 
+\end{block}
+
+\begin{block}
+	Verifique que el quandle diedral $\D_{7}$ es
+	isomorfo al quandle de conjugación de las involuciones del grupo diedral
+	$\D_{14}$ de $14$ elementos.
+%gap> D14 := DihedralGroup(IsPermGroup, 14);;
+%gap> gens := GeneratorsOfGroup(D14);
+%[ (1,2,3,4,5,6,7), (2,7)(3,6)(4,5) ]
+%gap> IsomorphismQuandles(DihedralQuandle(7), ConjugationQuandle(D14, gens[2]));
+%(2,4,7)
+\end{block}
+
+\begin{block}
+	Si $A$ es un grupo abeliano finito y $g\in\Aut(A)$ se define el
+	\textbf{quandle afín} de tipo $(A,g)$ como el quandle sobre $A$ dado por
+	\[
+	x\triangleright y=(1-g)(x)+g(y)
+	\]
+	para todo $x,y\in A$. Escriba una función que, dados un grupo abeliano $A$
+	y un automorfismo de $A$, devuelva la matriz del quandle afín de tipo
+	$(A,g)$. 
+\end{block}
+
+\begin{block}
+	Un quandle $X$ se dice \textbf{involutivo} si para cada $x\in X$ se tiene
+	$\varphi_x^2=\id$.  Escriba una función que determine si una matriz es la
+	matriz de un quandle involutivo. 
+\end{block}
+
+\begin{block}
+\label{xca:conjugacion}
+Es un ejercicio sencillo demostrar que en un quandle de conjugación
+necesariamente se verifica que $x\triangleright y=y=$ si y sólo si
+$y\triangleright x=x$.  Demuestre que el quandle de tres elementos dado por la
+sucesión de permutaciones $\varphi_1=(23)$, $\varphi_2=\varphi_3=\id$ no es un
+quandle de conjugación.
+%\begin{lstlisting}
+%gap> quandle := Quandle([(2,3),(),()]);;
+%gap> ForAny(Cartesian([1..3],[1..3]),\
+%> x->quandle[x[1]][x[2]]=x[2]\
+%> and quandle[x[2]][x[1]]<>x[1]);
+%true
+%\end{lstlisting}
+\end{block}
+
+\begin{block}
+	Construya el quandle dado por las permutaciones
+	\begin{align*}
+		&\varphi_1=(376)(485), && \varphi_2=(376)(485), && \varphi_3=(168)(257), && \varphi_4=(168)(257),\\
+		&\varphi_5=(174)(283), && \varphi_6=(174)(283), && \varphi_7=(135)(246), && \varphi_8=(135)(246),
+	\end{align*}
+	calcule su grupo interior, compruebe que es conexo y verifique que no es un
+	quandle de conjugación.
+\end{block}
+
+
+
+

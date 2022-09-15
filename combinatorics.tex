@@ -1,0 +1,339 @@
+\chapter{Combinatorics and topology}
+
+In this chapter we will see that some combinatoric structures are implemented in GAP, such as graphs, clique complexes, simplicial complexes (and more generally, regular CW-complexes) and finite posets.
+We will briefly explain how to use some basic commands to work with these structures.
+Some of them may not be included in the basic installation of GAP and so require installation.
+Below we list some useful packages:
+
+\begin{enumerate}
+    \item GRAPE: this package contains an implementation of $G$-graphs, that is, graphs together with a group action.
+    
+    \item HAP: this GAP package allows us to construct regular CW-complexes or simplicial complexes. With it, we can compute their homology, cohomology and fundamental. It also implements chain complexes and some group cohomology.
+    
+    \item Posets: this is an implementation of finite posets and finite topological spaces, which may be useful to simplify some calculations or even construct simplicial complexes as order-complexes.
+\end{enumerate}
+
+{\color{red} Add references.}
+
+We will give a very brief introduction to these packages. The reader can consult the documentation of these packages to get more detailed explanation of the commands available.
+
+\section{Relations}
+
+\begin{example}
+Let $A=\{2,\dots,100\}$ and let $\sim$ be the binary
+relation given by $n\sim m$ if and only if $\gcd(n,m)=1$.
+We construct the binary relation
+and then check whether the relation is
+reflexive, (anti)symmetric and transitive.
+
+\begin{lstlisting}
+gap> A := [2..100];;
+gap> l := [];;
+gap> for x in A do
+> for y in A do
+> if Gcd(x,y)>1 then
+> Add(l, Tuple([x,y]));
+> fi;
+> od;
+> od;
+gap> rel := BinaryRelationByElements(Domain(A), l);;
+gap> IsReflexiveBinaryRelation(rel);
+true
+gap> IsSymmetricBinaryRelation(rel);
+true
+gap> IsAntisymmetricBinaryRelation(rel);
+false
+gap> 1IsTransitiveBinaryRelation(rel);
+false
+\end{lstlisting}
+
+To finish, we want to compute the number
+of elements that are related to $12$.
+
+\begin{lstlisting}
+gap> Number(A, x->Gcd(x,12)>1);
+67
+\end{lstlisting}
+
+Can you compute the number of elements
+related to 12 in the case
+where $A=\{2,\dots,100000\}$?
+\end{example}
+
+\begin{example}
+For $g$ a polynomial such that $g(0)\ne 0$
+consider the sequence of polynomials
+given by $f_1=Xg$ and
+$f_{n+1}=(Xf'_n)^n$. Compute the multiplicity
+of $0$ as a root of $f_n$.
+
+Let us fix $g=1$ and construct the sequence up to
+some bound, say only five terms.
+\begin{lstlisting}
+gap> N := 5;;
+gap> x := Indeterminate(Rationals, "x");;
+gap> g := 1;;
+gap> f := [x*g];;
+gap> for n in [2..N] do
+> Add(f, (x*Derivative(f[n-1], x))^(n-1));
+> od;
+gap> f;
+[ x, x, x^2, 8*x^6, 5308416*x^24 ]
+\end{lstlisting}
+
+One can make experiments and use different values of $g$. It is an exercise to
+the reader to prove that the multiplicity of zero in $f_n$ is $n!$,
+independently of $g$.
+\end{example}
+
+
+\section{Graphs}
+
+We provide some examples of the use of the package \texttt{GRAPE} and its functionalities.
+The background idea in this package is to construct graphs that admit the action of a given group $G$, and take advantage of this action to actually compute the graph with a more efficient algorithms.
+
+For a group $G$, we can construct a $G$-graph with the command
+\[ \text{\lstinline{Graph( G, L, act, rel )}}\]
+where \lstinline{G} is a group, \lstinline{L} is a list of elements contained in a larger $G$-set with action given by the parameter \lstinline{act}, and \lstinline{rel} is a $G$-invariant boolean function.
+
+The most basic example is the case of the trivial group $G = 1$.
+We construct the graph on vertex set $[1,2,3,4,5]$ with relations $(i,i+1)$ for $1\leq i < 5$.
+
+\begin{lstlisting}
+gap> G := TrivialGroup();;
+gap> L := [1,2,3,4,5];;
+gap> act := function(x,y) return x; end;;
+gap> rel := function(x,y) return AbsInt(x-y) = 1; end;;
+gap> g:=Graph(G,L,act,rel);
+rec(
+  adjacencies := [ [ 2 ], [ 1, 3 ], [ 2, 4 ], [ 3, 5 ], [ 4 ]
+     ], group := Group(()), isGraph := true,
+  names := [ 1, 2, 3, 4, 5 ], order := 5,
+  representatives := [ 1, 2, 3, 4, 5 ],
+  schreierVector := [ -1, -2, -3, -4, -5 ] )
+\end{lstlisting}
+We can check which vertices are adjacent to a given one by calling \lstinline{Adjacency}:
+\begin{lstlisting}
+gap> Adjacency(g,1);
+[ 2 ]
+gap> Adjacency(g,3);
+[ 2, 4 ]
+\end{lstlisting}
+We can check if some edge is contained in the graph:
+\begin{lstlisting}
+gap> IsEdge(g, [1,2]);
+true
+gap> IsEdge(g, [1,3]);
+false
+\end{lstlisting}
+
+Now let's construct a graph with a non-trivial $G$ action.
+We take a set $L$ which is a (not necessary $G$-invariant) subset of a larger $G$-set $S$.
+
+For example, take $L$ to be a set of representatives of the conjugacy classes of elements of $G$.
+We take the graph $g$ on the elements of $G$, and we join two elements if and only if they commute.
+The following code of GAP produces such commuting-graph for the symmetric group on $6$ elements.
+\begin{lstlisting}
+gap> G:=SymmetricGroup(6);;
+gap> L:=List(ConjugacyClasses(G),Representative);;
+gap> act:=function(x,perm) return x^perm; end;;
+gap> rel:=function(x,y) return x^y = x; end;;
+gap> g:=Graph(G,L,act,rel);;
+\end{lstlisting}
+Now we can alternatively compute the centralizer of an element of $G$ by looking its adjacent vertices in this graph.
+
+Here we have to be careful: the vertices in the graph $g$ are integers $[1..n]$ where $n$ is the order of the graph $g$.
+To recover the name of the original vertex labelled with \lstinline{i}, we can call the function \lstinline{VertexName(g,i)}.
+
+\begin{lstlisting}
+gap> VertexName(g,2);
+(1,2)
+gap> List(Adjacency(g,2),j->VertexName(g,j));
+[ (), (1,2), (3,4), (1,2)(3,4) ]
+gap> Elements(Centralizer(G, (1,2)));
+[ (), (3,4), (1,2), (1,2)(3,4) ]
+\end{lstlisting}
+
+Many properties of a graph can be checked by using the commands of the GRAPE package.
+For example, we have available the following commands: \lstinline{IsEdge}, \lstinline{OrderGraph}, \lstinline{VertexDegree}, \lstinline{IsSimpleGraph},  \lstinline{Distance}, \lstinline{IsConnectedGraph},
+ \lstinline{Diameter}, \lstinline{Girt},
+ \lstinline{IsBipartite}, \lstinline{IsCompleteGraph}, \lstinline{IsRegularGraph}, etc. %\lstinline{IsDistanceRegular}, \lstinline{ChromaticNumber}, \lstinline{CliqueNumber}, 
+
+
+It is also possible to construct a graph from an adjacency matrix, as the following command shows.
+
+\begin{lstlisting}
+gap> A:=[ [0,0,0,0,0], [0,0,1,1,0], [0,1,0,0,1], [0,1,0,0,1], [0,
+0,1,1,0] ];;
+gap> g:=Graph( TrivialGroup(), [1,2,3,4,5], function(x,y) return 
+x; end, function(x,y) return A[x][y]=1; end);;
+gap> IsConnectedGraph(g);
+false
+gap> ConnectedComponents(g);
+[ [ 1 ], [ 2, 3, 4, 5 ] ]
+\end{lstlisting}
+
+We can also access to the connected component of a vertex with the command \lstinline{ConnectedComponent( g, v )}.
+
+\begin{lstlisting}
+gap> ConnectedComponent(g,2);
+[ 2, 3, 4, 5 ]
+\end{lstlisting}
+
+The command \lstinline{IndependentSet} allows us to construct independent sets of a graph.
+Note that this implements a greedy algorithm that not always returns a maximal independent set.
+
+\begin{lstlisting}
+gap> IndependentSet(g);
+[ 1, 2, 5 ]
+gap> IndependentSet(g, [1,3]);
+[ 1, 3, 4 ]
+\end{lstlisting}
+
+We can also check if two graphs are isomorphic with \lstinline{IsIsomorphicGraph}.
+Recall that the isomorphism problem of graphs is not known to be solvable in polynomial time nor to be NP-complete.
+
+\begin{lstlisting}
+gap> A:=[[0,0,0], [0,0,0], [0,0,0]];;
+gap> B:=[[0,0,1,1], [0,0,1,1], [1,1,0,0], [1,1,0,0]];;
+gap> C:=[[0,1,1,0], [1,0,0,1], [1,0,0,1], [0,1,1,0]];;
+gap> G:=TrivialGroup();;
+gap> rel:=function(x,y,M) return M[x][y] = 1; end;;
+gap> relMatrix:=function(M)
+>     local relM;
+>       relM:=function(x,y)
+>               return rel(x,y,M);
+>       end;;
+>       return relM;
+> end;;
+gap> act:=function(x,y) return x; end;;
+gap> gA:=Graph(G,[1,2,3],act, relMatrix(A));;
+gap> gB:=Graph(G,[1,2,3,4],act, relMatrix(B));;
+gap> gC:=Graph(G,[1,2,3,4],act, relMatrix(C));;
+gap> IsIsomorphicGraph(gA,gB);
+false
+gap> IsIsomorphicGraph(gB,gC);
+true
+\end{lstlisting}
+
+If we also want to get a concrete isomorphism between two graphs, we can use the command \lstinline{GraphIsomorphism}.
+This will return false if the graphs are not isomorphic.
+
+\begin{lstlisting}
+gap> GraphIsomorphism(gB,gC);
+(2,4,3)
+gap> GraphIsomorphism(gA,gB);
+fail
+\end{lstlisting}
+
+Finally, the GRAPE package contains some inbuilt function to construct known graphs.
+We give some examples below.
+
+For the complete graph on $n$ vertices with associated permutation group $G$ we can use the command \lstinline{CompleteGraph( G, n )}.
+We can omit $n$ and just call \lstinline{CompleteGraph(G)}, in which case $n$ is assumed to be largest point moved by $G$.
+
+\begin{lstlisting}
+gap> CompleteGraph(AlternatingGroup(4),4);
+rec( adjacencies := [ [ 2, 3, 4 ] ],
+  group := Alt( [ 1 .. 4 ] ), isGraph := true,
+  isSimple := true, order := 4, representatives := [ 1 ],
+  schreierVector := [ -1, 1, 1, 2 ] )
+gap> CompleteGraph(AlternatingGroup(4),5);
+rec( adjacencies := [ [ 2, 3, 4, 5 ], [ 1, 2, 3, 4 ] ],
+  group := Alt( [ 1 .. 4 ] ), isGraph := true,
+  isSimple := true, order := 5, representatives := [ 1, 5 ],
+  schreierVector := [ -1, 1, 1, 2, -2 ] )
+gap> CompleteGraph(SymmetricGroup(6));
+rec( adjacencies := [ [ 2, 3, 4, 5, 6 ] ],
+  group := Sym( [ 1 .. 6 ] ), isGraph := true,
+  isSimple := true, order := 6, representatives := [ 1 ],
+  schreierVector := [ -1, 1, 1, 1, 1, 1 ] )
+\end{lstlisting}
+
+For the Cayley graph of a group, we can call the function \lstinline{CayleyGraph(G, S)}, where $S$ is a subset of the group $G$ (which may be a generating set or not).
+We can omit the set $S$ and call the function \lstinline{CayleyGraph(G)}, which takes as underlying set $S$ the set  \lstinline{GeneratorsOfGroup(G)}.
+
+\begin{lstlisting}
+gap> CayleyGraph(PSL(2,3), [1]);
+rec( adjacencies := [ [  ] ],
+  group := Group([ (1,2,3)(4,7,10)(5,9,11)(6,8,12), (1,4)(2,6)
+      (3,5)(7,11)(8,10)(9,12) ]), isGraph := true,
+  isSimple := true,
+  names := [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3),
+      (1,2,4), (1,3,2), (1,3,4), (1,3)(2,4), (1,4,2),
+      (1,4,3), (1,4)(2,3) ], order := 12,
+  representatives := [ 1 ],
+  schreierVector := [ -1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 1 ] )
+gap> CayleyGraph(PSL(2,3));
+rec( adjacencies := [ [ 2, 3, 4 ] ],
+  group := Group([ (1,2,3)(4,7,10)(5,9,11)(6,8,12), (1,4)(2,6)
+      (3,5)(7,11)(8,10)(9,12) ]), isGraph := true,
+  isSimple := true,
+  names := [ (), (2,3,4), (2,4,3), (1,2)(3,4), (1,2,3),
+      (1,2,4), (1,3,2), (1,3,4), (1,3)(2,4), (1,4,2),
+      (1,4,3), (1,4)(2,3) ], order := 12,
+  representatives := [ 1 ],
+  schreierVector := [ -1, 1, 1, 2, 2, 2, 1, 1, 1, 1, 2, 1 ] )
+\end{lstlisting}
+
+\section{Simplicial complexes and posets}
+
+In this section, we will use the package \texttt{HAP} to work with simplicial complexes and computation of fundamental group and homology.
+
+The package \texttt{simpcomp} also implements simplicial complexes, but here we will use the commands of \texttt{HAP}.
+
+To construct a simplicial complex with \texttt{HAP}, we need to provide either the list of all simplices, or just the list of the maximal simplices.
+The following commands show such functionality.
+
+\begin{lstlisting}
+
+\end{lstlisting}
+
+Compute list of simplices of dimension...
+Compute Euler Characteristic...
+Compute (Co)Homology..
+Coefficients
+FundamentalGroup
+Chain Complex, coefficients
+
+
+\section{Group cohomology}
+
+% https://www.gap-system.org/Packages/crime.html
+%https://www.gap-system.org/Packages/cohomolo.html
+
+\section{Problems}
+
+\begin{prob}
+Given the matrix group $\GL_3(4)$, compute its Cayley graph with respect to the set of elementary matrices.
+\end{prob}
+
+\begin{prob}
+Compute the commuting graph of $\Sym_6$ on the set of its non-trivial $3$-subgroups.
+\end{prob}
+
+\begin{prob}
+Let $G = \PSL_2(8)$.
+\begin{enumerate}%[label=(\roman*)]
+    \item Show that the commuting graph on the $2$-subgroups of $G$ is disconnected.
+    \item Pick a connected component of this graph and show that the stabilizer of such component is a strongly $2$-embedded subgroup of $G$.
+\end{enumerate}
+\end{prob}
+
+\begin{prob}
+Let $G = \PSL_2(9)$.
+\begin{enumerate}%[label=(\roman*)]
+    \item Compute the poset of non-trivial solvable groups of $G$.
+    \item Show that its fundamental group is free.
+\end{enumerate}
+\end{prob}
+
+\begin{prob}
+Let $V$ a $4$-dimensional vector space over $\mathbb{F}_3$.
+Prove that the poset of non-trivial proper subspaces of $V$ is homotopy equivalent to a bouquet of $729$ spheres of dimension $2$.
+\end{prob}
+
+\begin{prob}
+Let $G = \Sym_8$ and consider the set $S = \{ (1,2), (1,3), (1,4) \}$.
+Construct the Cayley graph of $G$ on $S$ and show that the connected component of $1$ is isomorphic to the Cayley graph of $\Sym_4$ on the set $S$ (which is indeed isomorphic to the span of $G$).
+\end{prob}

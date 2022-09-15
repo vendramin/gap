@@ -1,0 +1,227 @@
+\chapter{Radical rings}
+
+A ring $R$ is said to be 
+\emph{Jacobson radical} if 
+\[
+	R=\{x\in R:\text{there exists $y\in R$ such that $x+y+xy=0$}\}.
+\]
+The following function check whether a finite ring is Jacobson radical: 
+\begin{lstlisting}
+gap> IsJacobsonRadical := function(ring)
+> local x, rad;
+> rad := [];
+> for x in ring do
+> if not First(ring, y->x+y+x*y=Zero(ring)) = fail then
+> Add(rad, x);
+> fi;
+> od;
+> return Size(ring)=Size(rad);
+> end;
+function( ring ) ... end
+\end{lstlisting}
+
+%Using this function we can prove that $J(\Z/4)=\{0,2\}$ and
+%$J(\Z/8)=\{0,2,4,6\}$ as the following code shows:
+%\begin{lstlisting}
+%gap> JacobsonRadical(Integers mod 4);
+%[ ZmodnZObj( 0, 4 ), ZmodnZObj( 2, 4 ) ]
+%gap> JacobsonRadical(Integers mod 8);
+%[ ZmodnZObj( 0, 8 ), ZmodnZObj( 2, 8 ), 
+%  ZmodnZObj( 4, 8 ), ZmodnZObj( 6, 8 ) ]
+%\end{lstlisting}
+
+With this function it is pretty easy to know if a given finite ring is radical
+or not. For example the ring $\Z/3$ of integers mod 3 is not Jacobson radical:
+\begin{lstlisting}
+gap> IsJacobsonRadical(Integers mod 3);
+false
+\end{lstlisting}
+
+\begin{example}
+	The subring $\{0,2\}$ of $\Z/4$ is Jacobson radical:
+\begin{lstlisting}
+gap> ring := Integers mod 4;;
+gap> subring := Subring(ring, [ZmodnZObj(0,4), ZmodnZObj(2,4)]);;
+gap> Elements(subring);
+[ ZmodnZObj( 0, 4 ), ZmodnZObj( 2, 4 ) ]
+gap> IsJacobsonRadical(subring);
+true
+\end{lstlisting}
+\end{example}
+
+One can easily prove that a ring $R$ is Jacobson radical if and only if the
+operation $R\times R\to R$, $(x,y)\mapsto x\circ y=x+y+xy$, turns $R$ into a
+group. This group is known as the \emph{adjoint group} of the Jacobson radical
+ring $R$. Let us compute the adjoint group of a Jacobson radical ring:
+
+\begin{lstlisting}
+gap> AdjointGroup := function(ring)
+> local x, y, l, perms;
+> if not IsJacobsonRadical(ring) then
+> return fail;
+> fi;
+> perms := NullMat(Size(ring), Size(ring));
+> l := AsList(ring);
+> for x in l do
+> for y in l do
+> perms[Position(l, x)][Position(l, y)] := Position(l, x+y+x*y);
+> od;
+> od;
+> return Group(List(perms, PermList));
+> end;
+function( ring ) ... end
+\end{lstlisting}
+
+To construct other examples we will use the small rings database included
+in~\GAP.  The database contains all small rings of size $\leq15$.
+
+\begin{example}
+	For $n\in\{1,\dots,15\}$ let $r(n)$ be the number of rings (up to
+	isomorphism) of size $n$. Some values of $r(n)$ are shown in
+	Table~\ref{tab:rings}. 
+	\begin{table}[h]
+		\caption{Number of rings of size $\leq15$.}
+		\label{tab:rings}
+		\begin{tabular}{|c|ccccccccccccccc|}
+			\hline
+			n & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15\\
+			\hline
+			r(n) & 1 & 2 & 2 & 11 & 2 & 4 & 2 & 52 & 11 & 4 & 2 & 22 & 2 & 4 & 4\\
+			\hline
+		\end{tabular}
+	\end{table}
+
+	These values of $r(n)$ were computed using the function
+	\lstinline{NumberSmallRings}. Here is the code:
+\begin{lstlisting}
+gap> List([1..15], NumberSmallRings);
+[ 1, 2, 2, 11, 2, 4, 2, 52, 11, 4, 2, 22, 2, 4, 4 ]
+\end{lstlisting}
+\end{example}
+
+To obtain rings from the database one uses the function \lstinline{SmallRing}.
+Once a ring is constructed there are several functions that can be used:
+\lstinline{Subrings}, \lstinline{Ideals}, \lstinline{DirectSum}, etc.
+
+\begin{example}
+The ring $R_{4,3}$ (that is the third ring of size four of the dababase) is
+a commutative ring without one. Let us construct this ring:
+\begin{lstlisting}
+gap> ring := SmallRing(4,3);
+<ring with 1 generators>
+gap> GeneratorsOfRing(ring);
+[ a ]
+gap> IsRingWithOne(ring);
+false
+gap> IsCommutative(ring);
+true
+\end{lstlisting}
+It is not Jacobson radical:
+\begin{lstlisting}
+gap> IsJacobsonRadical(ring);
+false
+gap> AdjointGroup(ring);
+fail
+\end{lstlisting}
+How this ring looks like? 
+To display the multiplication table of our ring we can use the function 
+\lstinline{ShowMultiplicationTable}: 
+\begin{lstlisting}
+gap> ShowMultiplicationTable(ring);
+*   | 0*a a   2*a -a 
+----+----------------
+0*a | 0*a 0*a 0*a 0*a
+a   | 0*a a   2*a -a 
+2*a | 0*a 2*a 0*a 2*a
+-a  | 0*a -a  2*a a  
+\end{lstlisting}
+Similarly we can display the addition table:
+\begin{lstlisting}
+gap> ShowAdditionTable(ring);
++   | 0*a a   2*a -a 
+----+----------------
+0*a | 0*a a   2*a -a 
+a   | a   2*a -a  0*a
+2*a | 2*a -a  0*a a  
+-a  | -a  0*a a   2*a
+\end{lstlisting}
+\end{example}
+
+Let us show an example of a radical ring:
+
+\begin{example}
+The ring $R_{8,10}$ (that is the $10$-th ring of size eight of the dababase) is
+non-commutative Jacobson radical ring with adjoint group isomorphic to the
+dihedral group of eight elements: 
+\begin{lstlisting}
+gap> ring := SmallRing(8,10);
+<ring with 2 generators>
+gap> IsRingWithOne(ring);
+false
+gap> IsCommutative(ring);
+false
+gap> IsJacobsonRadical(ring);
+true
+gap> StructureDescription(AdjointGroup(ring));
+"D8"
+\end{lstlisting}
+\end{example}
+
+Now let us play with all radical rings in the database. Our first task is to
+construct all radical rings of size $\leq15$. 
+
+\begin{example}
+	How many Jacobson radical rings are there? The following code shows
+	that there are $22$ 
+	radical rings of size eight:
+\begin{lstlisting}
+gap> n := 8;;
+gap> Number([1..NumberSmallRings(n)], \
+> x->IsJacobsonRadical(SmallRing(n,x)));
+22
+\end{lstlisting}
+So if we want to construct all radical rings of size eight we can do the following:
+a) we make a list with all rings of size eight; and b) we keep only those that are Jacobson radical. Here is the code:
+
+\begin{lstlisting}
+gap> Filtered(List([1..NumberSmallRings(n)],\
+> k->SmallRing(n,k)), IsJacobsonRadical);
+[ <ring with 1 generators>, <ring with 1 generators>, 
+  <ring with 1 generators>, <ring with 2 generators>, 
+  <ring with 2 generators>, <ring with 2 generators>, 
+  <ring with 2 generators>, <ring with 2 generators>, 
+  <ring with 2 generators>, <ring with 2 generators>, 
+  <ring with 2 generators>, <ring with 2 generators>, 
+  <ring with 2 generators>, <ring with 2 generators>, 
+  <ring with 2 generators>, <ring with 3 generators>, 
+  <ring with 3 generators>, <ring with 3 generators>, 
+  <ring with 3 generators>, <ring with 3 generators>, 
+  <ring with 3 generators>, <ring with 3 generators> ]
+gap> Size(last);
+22
+\end{lstlisting}
+\end{example}
+
+\section{Problems}
+
+%\begin{prob}
+%	Write a function that check whether an ideal is regular or not. 
+%\end{prob}
+%
+%\begin{prob}
+%	Write a function that returns the Jacobson radical of a ring. Recall that
+%	the Jacobson radical $J(R)$ of a ring $R$ is the intersection of all maximal regular ideals of $R$.
+%\end{prob}
+
+\begin{prob}
+	Write a function that for each $n\in\{1,\dots,15\}$ returns the number of
+	isomorphism classes of Jacobson radical rings of size $n$. 
+\end{prob}
+
+\begin{prob}
+	Write a function that for each $n\in\{1,\dots,15\}$ returns the list of
+	isomorphism classes of Jacobson radical rings of size $n$. 
+\end{prob}
+
+
+

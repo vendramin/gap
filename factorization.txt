@@ -1,0 +1,13 @@
+gap> Factorization(gr, (1,2,3));                                      
+x2*x1
+gap> Factorization(gr, (1,3,2));
+x1*x2
+gap> Factorization(gr, (1,3));
+x1*x2*x1
+gap> n := 3;;
+gap> gens := List([1..n-1], x->(x,x+1));
+[ (1,2), (2,3) ]
+gap> gr := Group(gens);
+Group([ (1,2), (2,3) ])
+gap> ExtRepOfObj(word)
+

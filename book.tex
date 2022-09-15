@@ -19,30 +19,36 @@
 \usepackage{graphicx}        
 \usepackage{multicol} 
 \usepackage{hyperref} 
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
 \makeindex             
 
 \overfullrule=1mm
 
 \newcommand{\GAP}{\textsf{GAP}}
 
-\newcommand{\N}{\mathbb{N}}
-\newcommand{\Q}{\mathbb{Q}}
-\newcommand{\Z}{\mathbb{Z}}
-\newcommand{\F}{\mathbb{F}}
-\newcommand{\R}{\mathbb{R}}
-\newcommand{\C}{\mathbb{C}}
-\newcommand{\K}{\mathbb{K}}
-\newcommand{\T}{\mathbb{T}}
-\renewcommand{\D}{\mathbb{D}}
+% BB letters
 \newcommand{\B}{\mathbb{B}}
+\renewcommand{\D}{\mathbb{D}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\K}{\mathbb{K}}
+%\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
 
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\Z}{\mathbb{Z}}
+
+% Frak
 \newcommand{\NA}{\mathfrak{B}}
 
+% Caligraphics
 \newcommand{\cE}{\mathcal{E}}
 \newcommand{\cH}{\mathcal{H}}
 
 \newcommand{\ot}{\otimes}
-
 
 \newcommand{\Aff}{\mathrm{Aff}}
 \newcommand{\Rad}{\mathrm{rad}}
@@ -55,13 +61,17 @@
 \newcommand{\Aut}{\operatorname{Aut}}
 \newcommand{\End}{\operatorname{End}}
 \newcommand{\Irr}{\operatorname{Irr}}
+\newcommand{\lcm}{\mathrm{mcm}} % Spanish??
+
+% Groups
 \newcommand{\GL}{\mathbf{GL}}
 \newcommand{\PGL}{\mathbf{PGL}}
 \newcommand{\PSL}{\mathbf{PSL}}
 \newcommand{\SL}{\mathbf{SL}}
+\newcommand{\Sp}{\operatorname{Sp}}
 \newcommand{\Alt}{\mathbb{A}}
 \newcommand{\Sym}{\mathbb{S}}
-\newcommand{\lcm}{\mathrm{mcm}}
+
 
 \newcommand{\cs}{\operatorname{cs}}
 \newcommand{\cd}{\operatorname{cd}}
@@ -79,6 +89,8 @@
 \newcommand{\AG}[1]{\textcolor{blue}{AG: #1}}
 
 
+\setenumerate[0]{label=(\alph*)}
+
 \begin{document}
 
 
@@ -91,7 +103,7 @@
   framerule=0pt,
 }
 
-\author{Agust\'in Garc\'ia Iglesias \and Leandro Vendramin}
+\author{Kevin Piterman and Leandro Vendramin}
 \title{Computer algebra with \GAP}
 \subtitle{-- Monograph --}
 \maketitle
@@ -115,26 +127,28 @@
 \include{first}
 \include{groups}
 %\include{representations}
-%\include{advanced}
+\include{advanced}
 %\include{chars}
 
 \part{Projects}
 
-%\include{radical}
-%\include{simple}
-%\include{algebras}
-%\include{nichols}
-%\include{appendix}
-%\include{problems}
+\include{radical}
+\include{simple}
+\include{algebras}
+\include{combinatorics}
+%\include{nichols} % maybe not
+\include{parallel}
+\include{appendix}
+\include{problems}
 %
-%\backmatter
-%\include{glossary}
-%\include{solutions}
-%
-%\bibliographystyle{abbrv}
-%\bibliography{refs}
-%
-%\printindex
+\backmatter
+\include{glossary}
+\include{solutions}
+
+\bibliographystyle{abbrv}
+\bibliography{refs}
+
+\printindex
 
 \end{document}
 

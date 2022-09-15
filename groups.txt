@@ -1,0 +1,11 @@
+grupos eficientes; no todo grupo lo es, Swan construyó un contraejemplo
+
+
+* probar que GL(3,2) es simple contando elementos. 
+
+
+* sin utilizar AllSubgroups, quedarse con todos los p-subgrupos de un grupo dado 
+
+* Dada una lista L de subgrupos o de elementos de un grupo G, construir una funcion que devuelva una sublista de L que contenga un representante por clase de conjugacion de cada elemento de L (es decir que devuelva una "seccion" de L/G)
+
+* 
